@@ -2,9 +2,8 @@
 
 namespace HHW.Service.Base.Object
 {
-    public interface IUpdateSystem
+    public interface IUpdateSystem : ISystem
     {
-        Type Type();
         void Execute(object o);
     }
 

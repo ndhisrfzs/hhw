@@ -1,14 +1,12 @@
-﻿using HHW.Service.Base.Helper;
-using System;
+﻿using System;
 
-namespace App
+namespace HHW.App
 {
     class Program
     {
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
-            Console.Read();
         }
     }
 }

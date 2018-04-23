@@ -2,9 +2,9 @@
 
 namespace HHW.Service.Base.Object
 {
-    public interface IAwakeSystem
+    public interface IAwakeSystem : ISystem
     {
-        Type Type();
+
     }
     public interface IAwake : IAwakeSystem
     {

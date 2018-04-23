@@ -1,0 +1,9 @@
+D:\github\HHW\HHW.Service\bin\Debug\netcoreapp2.0\HHW.Service.deps.json
+D:\github\HHW\HHW.Service\bin\Debug\netcoreapp2.0\HHW.Service.dll
+D:\github\HHW\HHW.Service\bin\Debug\netcoreapp2.0\HHW.Service.pdb
+D:\github\HHW\HHW.Service\obj\Debug\netcoreapp2.0\HHW.Service.csprojResolveAssemblyReference.cache
+D:\github\HHW\HHW.Service\obj\Debug\netcoreapp2.0\HHW.Service.csproj.CoreCompileInputs.cache
+D:\github\HHW\HHW.Service\obj\Debug\netcoreapp2.0\HHW.Service.AssemblyInfoInputs.cache
+D:\github\HHW\HHW.Service\obj\Debug\netcoreapp2.0\HHW.Service.AssemblyInfo.cs
+D:\github\HHW\HHW.Service\obj\Debug\netcoreapp2.0\HHW.Service.dll
+D:\github\HHW\HHW.Service\obj\Debug\netcoreapp2.0\HHW.Service.pdb

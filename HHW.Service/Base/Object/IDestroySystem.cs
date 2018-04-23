@@ -2,9 +2,8 @@
 
 namespace HHW.Service.Base.Object
 {
-    public interface IDestroySystem
+    public interface IDestroySystem : ISystem
     {
-        Type Type();
         void Execute(object o);
     }
 

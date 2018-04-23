@@ -2,9 +2,8 @@
 
 namespace HHW.Service.Base.Object
 {
-    public interface ILoadSystem
+    public interface ILoadSystem : ISystem
     {
-        Type Type();
         void Execute(object o);
     }
 

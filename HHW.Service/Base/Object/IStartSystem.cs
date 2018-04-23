@@ -2,9 +2,8 @@
 
 namespace HHW.Service.Base.Object
 {
-    public interface IStartSystem
+    public interface IStartSystem : ISystem
     {
-        Type Type();
         void Execute(object o);
     }
 
