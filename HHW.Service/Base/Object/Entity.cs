@@ -1,8 +1,6 @@
-﻿using HHW.Service.Base.Helper;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace HHW.Service.Base.Object
 {
@@ -53,6 +51,89 @@ namespace HHW.Service.Base.Object
 
             Component component = ComponentFactory.CreateWithParent(type, this);
             this.componentDict.Add(component.GetType(), component);
+            return component;
+        }
+
+        public T AddComponent<T>() where T : Component, new()
+        {
+            if (this.componentDict.ContainsKey(typeof(T)))
+            {
+                throw new Exception($"AddComponent, Component already exist, id:{this.Id}, Component:{typeof(T).Name}");
+            }
+
+            T component = ComponentFactory.CreateWithParent<T>(this);
+            this.componentDict.Add(component.GetType(), component);
+            return component;
+        }
+
+        public T AddComponent<T, A>(A a) where T : Component, new()
+        {
+            if (this.componentDict.ContainsKey(typeof(T)))
+            {
+                throw new Exception($"AddComponent, Component already exist, id:{this.Id}, Component:{typeof(T).Name}");
+            }
+
+            T component = ComponentFactory.CreateWithParent<T, A>(this, a);
+            this.componentDict.Add(component.GetType(), component);
+            return component;
+        }
+
+        public T AddComponent<T, A, B>(A a, B b) where T : Component, new()
+        {
+            if (this.componentDict.ContainsKey(typeof(T)))
+            {
+                throw new Exception($"AddComponent, Component already exist, id:{this.Id}, Component:{typeof(T).Name}");
+            }
+
+            T component = ComponentFactory.CreateWithParent<T, A, B>(this, a, b);
+            this.componentDict.Add(component.GetType(), component);
+            return component;
+        }
+
+        public T AddComponent<T, A, B, C>(A a, B b, C c) where T : Component, new()
+        {
+            if (this.componentDict.ContainsKey(typeof(T)))
+            {
+                throw new Exception($"AddComponent, Component already exist, id:{this.Id}, Component:{typeof(T).Name}");
+            }
+
+            T component = ComponentFactory.CreateWithParent<T, A, B, C>(this, a, b, c);
+            this.componentDict.Add(component.GetType(), component);
+            return component;
+        }
+
+        public void RemoveComponent<T>() where T : Component
+        {
+            RemoveComponent(typeof(T));
+        }
+
+        public void RemoveComponent(Type type)
+        {
+            Component component;
+            if(this.componentDict.Remove(type, out component))
+            {
+                component.Dispose();
+            }
+        }
+
+        public T GetComponent<T>() where T : Component
+        {
+            Component component;
+            if(!this.componentDict.TryGetValue(typeof(T), out component))
+            {
+                return default(T);
+            }
+            return (T)component;
+        }
+
+        public Component GetComponent(Type type)
+        {
+            Component component;
+            if(!this.componentDict.TryGetValue(type, out component))
+            {
+                return null;
+            }
+
             return component;
         }
 
