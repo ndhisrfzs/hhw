@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
-namespace HHW.Service.Base.Helper
+namespace HHW.Service
 {
     public static class DllHelper
     {

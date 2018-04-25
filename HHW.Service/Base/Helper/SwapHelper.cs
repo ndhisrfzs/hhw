@@ -1,4 +1,4 @@
-﻿namespace HHW.Service.Base.Helper
+﻿namespace HHW.Service
 {
     public static class SwapHelper
     {

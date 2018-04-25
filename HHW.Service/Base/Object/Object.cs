@@ -1,7 +1,6 @@
-﻿using HHW.Service.Base.Helper;
-using System;
+﻿using System;
 
-namespace HHW.Service.Base.Object
+namespace HHW.Service
 {
     public abstract class Object : IDisposable
     {

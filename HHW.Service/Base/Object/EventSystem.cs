@@ -1,10 +1,9 @@
-﻿using HHW.Service.Base.Helper;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace HHW.Service.Base.Object
+namespace HHW.Service
 {
     public enum DLLType
     {

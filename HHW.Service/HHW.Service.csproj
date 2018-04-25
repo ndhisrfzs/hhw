@@ -2,6 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <RootNamespace>HHW.Service</RootNamespace>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Component\" />
+  </ItemGroup>
 
 </Project>

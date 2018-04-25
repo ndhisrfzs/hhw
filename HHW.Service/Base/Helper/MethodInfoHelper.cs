@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Text;
+﻿using System.Reflection;
 
-namespace HHW.Service.Base.Helper
+namespace HHW.Service
 {
     public static class MethodInfoHelper
     {

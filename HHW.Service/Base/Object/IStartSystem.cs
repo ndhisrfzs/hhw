@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HHW.Service.Base.Object
+namespace HHW.Service
 {
     public interface IStartSystem : ISystem
     {

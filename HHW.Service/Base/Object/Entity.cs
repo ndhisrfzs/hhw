@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace HHW.Service.Base.Object
+namespace HHW.Service
 {
     public class Entity : Object
     {

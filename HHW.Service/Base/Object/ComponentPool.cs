@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace HHW.Service.Base.Object
+namespace HHW.Service
 {
     public static class ComponentPool
     {

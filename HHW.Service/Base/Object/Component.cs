@@ -1,7 +1,6 @@
-﻿using HHW.Service.Base.Helper;
-using System;
+﻿using System;
 
-namespace HHW.Service.Base.Object
+namespace HHW.Service
 {
     public abstract class Component : IDisposable
     {
@@ -38,7 +37,7 @@ namespace HHW.Service.Base.Object
         }
         public Entity Parent { get; set; }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             if(this.IsDisposed)
             {

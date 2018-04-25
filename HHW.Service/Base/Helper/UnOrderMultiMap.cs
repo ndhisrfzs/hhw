@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace HHW.Service.Base.Helper
+namespace HHW.Service
 {
     public class UnOrderMultiMap<T, K>
     {
