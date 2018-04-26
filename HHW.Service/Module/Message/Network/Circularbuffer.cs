@@ -45,7 +45,7 @@ namespace HHW.Service
                 }
                 if (c < 0)
                 {
-                    Log.Error("TBuffer count < 0: {0}, {1}, {2}".Fmt(this.bufferQueue.Count, this.LastIndex, this.FirstIndex));
+                    //Log.Error("TBuffer count < 0: {0}, {1}, {2}".Fmt(this.bufferQueue.Count, this.LastIndex, this.FirstIndex));
                 }
                 return c;
             }

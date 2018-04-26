@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace HHW.App
 {
@@ -8,6 +9,7 @@ namespace HHW.App
         {
             Console.WriteLine("Hello World!");
             test();
+            call(10);
         }
 
         static async void test()
@@ -16,13 +18,20 @@ namespace HHW.App
             while(true)
             {
                 i = await test2(i);
+                Console.Write(i);
             }
         }
 
-        static async System.Threading.Tasks.Task<int> test2(int i)
+        static Action<int> call;
+        static System.Threading.Tasks.Task<int> test2(int i)
         {
-            await System.Threading.Tasks.Task.CompletedTask;
-            return i + 1; 
+            var tcs = new TaskCompletionSource<int>();
+            call = (v) =>
+            {
+                tcs.SetResult(v);
+            };
+
+            return tcs.Task;
         }
     }
 }

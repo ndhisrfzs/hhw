@@ -63,7 +63,7 @@ namespace HHW.Service
 
             base.Dispose();
 
-            this.server.Remove(this.InstanceId);
+            this.server.Remove(this.id);
         }
     }
 }

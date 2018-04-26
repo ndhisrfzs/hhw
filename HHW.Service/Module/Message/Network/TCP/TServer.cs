@@ -58,7 +58,7 @@ namespace HHW.Service
 
             TcpClient tcpClient = await this.acceptor.AcceptTcpClientAsync();
             AClient client = new TClient(tcpClient, this);
-            this.idClients[client.InstanceId] = client;
+            this.idClients[client.id] = client;
             return client;
         }
 
@@ -66,7 +66,7 @@ namespace HHW.Service
         {
             TcpClient tcpClient = new TcpClient();
             AClient client = new TClient(tcpClient, ipEndPoint, this);
-            this.idClients[client.InstanceId] = client;
+            this.idClients[client.id] = client;
             return client;
         }
 

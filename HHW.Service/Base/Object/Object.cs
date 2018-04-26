@@ -4,27 +4,59 @@ namespace HHW.Service
 {
     public abstract class Object : IDisposable
     {
-        public long Id { get; protected set; }
+        public long id { get; protected set; }
         protected Object()
         {
-            this.Id = IdGenerater.GenerateId();
+            this.id = IdGenerater.GenerateId();
+            EventSystem.Add(this);
         }
         protected Object(long id)
         {
-            this.Id = id;
+            this.id = id;
         }
+
+        private bool isFromPool;
+        public bool IsFromPool
+        {
+            get
+            {
+                return isFromPool;
+            }
+            set
+            {
+                isFromPool = value;
+                if (id == 0)
+                {
+                    id = IdGenerater.GenerateId();
+                    EventSystem.Add(this);
+                }
+            }
+        }
+
+        public Entity Parent { get; set; }
 
         public bool IsDisposed
         {
             get
             {
-                return this.Id == 0;
+                return this.id == 0;
             }
         }
 
         public virtual void Dispose()
         {
-            throw new NotImplementedException();
+            if (this.IsDisposed)
+            {
+                return;
+            }
+
+            this.id = 0;
+            if (this.isFromPool)
+            {
+                ObjectPool.Recycle(this);
+            }
+
+            EventSystem.Destroy(this);
         }
     }
 }

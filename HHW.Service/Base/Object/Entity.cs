@@ -46,10 +46,10 @@ namespace HHW.Service
         {
             if(this.componentDict.ContainsKey(type))
             {
-                throw new Exception($"AddComponent, Component already exist, id:{this.Id}, Component:{type.Name}");
+                throw new Exception($"AddComponent, Component already exist, id:{this.id}, Component:{type.Name}");
             }
 
-            Component component = ComponentFactory.CreateWithParent(type, this);
+            Component component = ObjectFactory.CreateWithParent(type, this);
             this.componentDict.Add(component.GetType(), component);
             return component;
         }
@@ -58,10 +58,10 @@ namespace HHW.Service
         {
             if (this.componentDict.ContainsKey(typeof(T)))
             {
-                throw new Exception($"AddComponent, Component already exist, id:{this.Id}, Component:{typeof(T).Name}");
+                throw new Exception($"AddComponent, Component already exist, id:{this.id}, Component:{typeof(T).Name}");
             }
 
-            T component = ComponentFactory.CreateWithParent<T>(this);
+            T component = ObjectFactory.CreateWithParent<T>(this);
             this.componentDict.Add(component.GetType(), component);
             return component;
         }
@@ -70,10 +70,10 @@ namespace HHW.Service
         {
             if (this.componentDict.ContainsKey(typeof(T)))
             {
-                throw new Exception($"AddComponent, Component already exist, id:{this.Id}, Component:{typeof(T).Name}");
+                throw new Exception($"AddComponent, Component already exist, id:{this.id}, Component:{typeof(T).Name}");
             }
 
-            T component = ComponentFactory.CreateWithParent<T, A>(this, a);
+            T component = ObjectFactory.CreateWithParent<T, A>(this, a);
             this.componentDict.Add(component.GetType(), component);
             return component;
         }
@@ -82,10 +82,10 @@ namespace HHW.Service
         {
             if (this.componentDict.ContainsKey(typeof(T)))
             {
-                throw new Exception($"AddComponent, Component already exist, id:{this.Id}, Component:{typeof(T).Name}");
+                throw new Exception($"AddComponent, Component already exist, id:{this.id}, Component:{typeof(T).Name}");
             }
 
-            T component = ComponentFactory.CreateWithParent<T, A, B>(this, a, b);
+            T component = ObjectFactory.CreateWithParent<T, A, B>(this, a, b);
             this.componentDict.Add(component.GetType(), component);
             return component;
         }
@@ -94,10 +94,10 @@ namespace HHW.Service
         {
             if (this.componentDict.ContainsKey(typeof(T)))
             {
-                throw new Exception($"AddComponent, Component already exist, id:{this.Id}, Component:{typeof(T).Name}");
+                throw new Exception($"AddComponent, Component already exist, id:{this.id}, Component:{typeof(T).Name}");
             }
 
-            T component = ComponentFactory.CreateWithParent<T, A, B, C>(this, a, b, c);
+            T component = ObjectFactory.CreateWithParent<T, A, B, C>(this, a, b, c);
             this.componentDict.Add(component.GetType(), component);
             return component;
         }

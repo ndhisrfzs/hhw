@@ -1,56 +1,20 @@
-﻿using System;
-
-namespace HHW.Service
+﻿namespace HHW.Service
 {
-    public abstract class Component : IDisposable
+    public abstract class Component : Object
     {
-        public long InstanceId { get; protected set; }
-        protected Component()
+        public Component()
+            :base()
         {
-            this.InstanceId = IdGenerater.GenerateId();
-            EventSystem.Add(this);
+        }
+        public Component(long id)
+            :base(id)
+        {
+
         }
 
-        private bool isFromPool;
-        public bool IsFromPool
+        public override void Dispose()
         {
-            get
-            {
-                return isFromPool;
-            }
-            set
-            {
-                isFromPool = value;
-                if(InstanceId == 0)
-                {
-                    InstanceId = IdGenerater.GenerateId();
-                    EventSystem.Add(this);
-                }
-            }
-        }
-        public bool IsDisposed
-        {
-            get
-            {
-                return InstanceId == 0;
-            }
-        }
-        public Entity Parent { get; set; }
-
-        public virtual void Dispose()
-        {
-            if(this.IsDisposed)
-            {
-                return;
-            }
-
-            this.InstanceId = 0;
-            if(this.isFromPool)
-            {
-                ComponentPool.Recycle(this);
-            }
-
-            EventSystem.Destroy(this);
+            base.Dispose();
         }
     }
 }

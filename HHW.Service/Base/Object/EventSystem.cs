@@ -13,7 +13,7 @@ namespace HHW.Service
     }
     public static class EventSystem
     {
-        private static readonly Dictionary<long, Component> allComponents = new Dictionary<long, Component>();
+        private static readonly Dictionary<long, Object> allComponents = new Dictionary<long, Object>();
         private static readonly Dictionary<DLLType, Assembly> assemblies = new Dictionary<DLLType, Assembly>();
         private static readonly UnOrderMultiMap<Type, IAwakeSystem> awakeSystems = new UnOrderMultiMap<Type, IAwakeSystem>();
         private static readonly UnOrderMultiMap<Type, IStartSystem> startSystems = new UnOrderMultiMap<Type, IStartSystem>();
@@ -88,23 +88,23 @@ namespace HHW.Service
             Load();
         }
 
-        public static void Add(Component component)
+        public static void Add(Object obj)
         {
-            allComponents.Add(component.InstanceId, component);
+            allComponents.Add(obj.id, obj);
 
-            Type type = component.GetType();
+            Type type = obj.GetType();
 
             if(loadSystems.ContainsKey(type))
             {
-                loaders.Enqueue(component.InstanceId);
+                loaders.Enqueue(obj.id);
             }
             if(startSystems.ContainsKey(type))
             {
-                starts.Enqueue(component.InstanceId);
+                starts.Enqueue(obj.id);
             }
             if(updateSystems.ContainsKey(type))
             {
-                updates.Enqueue(component.InstanceId);
+                updates.Enqueue(obj.id);
             }
         }
 
@@ -113,15 +113,16 @@ namespace HHW.Service
             while(loaders.Count > 0)
             {
                 long instanceId = loaders.Dequeue();
-                if(!allComponents.TryGetValue(instanceId, out Component component))
+                Object obj;
+                if(!allComponents.TryGetValue(instanceId, out obj))
                 {
                     continue;
                 }
-                if(component.IsDisposed)
+                if(obj.IsDisposed)
                 {
                     continue;
                 }
-                List<ILoadSystem> iLoadSystems = loadSystems[component.GetType()];
+                List<ILoadSystem> iLoadSystems = loadSystems[obj.GetType()];
                 if(iLoadSystems == null)
                 {
                     continue;
@@ -132,7 +133,7 @@ namespace HHW.Service
                 {
                     try
                     {
-                        iLoadSystem.Execute(component);
+                        iLoadSystem.Execute(obj);
                     }
                     catch(Exception e)
                     {
@@ -144,9 +145,9 @@ namespace HHW.Service
             SwapHelper.Swap(ref loaders, ref tempLoaders);
         }
 
-        public static void Awake(Component component)
+        public static void Awake(Object obj)
         {
-            List<IAwakeSystem> iAwakeSystems = awakeSystems[component.GetType()];
+            List<IAwakeSystem> iAwakeSystems = awakeSystems[obj.GetType()];
             if(iAwakeSystems == null)
             {
                 return;
@@ -167,7 +168,7 @@ namespace HHW.Service
 
                 try
                 {
-                    iAwake.Execute(component);
+                    iAwake.Execute(obj);
                 }
                 catch(Exception e)
                 {
@@ -176,9 +177,9 @@ namespace HHW.Service
             }
         }
 
-        public static void Awake<A>(Component component, A a)
+        public static void Awake<A>(Object obj, A a)
         {
-            List<IAwakeSystem> iAwakeSystems = awakeSystems[component.GetType()];
+            List<IAwakeSystem> iAwakeSystems = awakeSystems[obj.GetType()];
             if(iAwakeSystems == null)
             {
                 return;
@@ -199,7 +200,7 @@ namespace HHW.Service
 
                 try
                 {
-                    iAwake.Execute(component, a);
+                    iAwake.Execute(obj, a);
                 }
                 catch (Exception e)
                 {
@@ -208,9 +209,9 @@ namespace HHW.Service
             }
         }
 
-        public static void Awake<A, B>(Component component, A a, B b)
+        public static void Awake<A, B>(Object obj, A a, B b)
         {
-            List<IAwakeSystem> iAwakeSystems = awakeSystems[component.GetType()];
+            List<IAwakeSystem> iAwakeSystems = awakeSystems[obj.GetType()];
             if (iAwakeSystems == null)
             {
                 return;
@@ -231,7 +232,7 @@ namespace HHW.Service
 
                 try
                 {
-                    iAwake.Execute(component, a, b);
+                    iAwake.Execute(obj, a, b);
                 }
                 catch (Exception e)
                 {
@@ -240,9 +241,9 @@ namespace HHW.Service
             }
         }
 
-        public static void Awake<A, B, C>(Component component, A a, B b, C c)
+        public static void Awake<A, B, C>(Object obj, A a, B b, C c)
         {
-            List<IAwakeSystem> iAwakeSystems = awakeSystems[component.GetType()];
+            List<IAwakeSystem> iAwakeSystems = awakeSystems[obj.GetType()];
             if (iAwakeSystems == null)
             {
                 return;
@@ -263,7 +264,7 @@ namespace HHW.Service
 
                 try
                 {
-                    iAwake.Execute(component, a, b, c);
+                    iAwake.Execute(obj, a, b, c);
                 }
                 catch (Exception e)
                 {
@@ -277,12 +278,13 @@ namespace HHW.Service
             while(starts.Count > 0)
             {
                 long instanceId = starts.Dequeue();
-                if(!allComponents.TryGetValue(instanceId, out Component component))
+                Object obj;
+                if(!allComponents.TryGetValue(instanceId, out obj))
                 {
                     continue;
                 }
 
-                List<IStartSystem> iStartSystems = startSystems[component.GetType()];
+                List<IStartSystem> iStartSystems = startSystems[obj.GetType()];
                 if(iStartSystems == null)
                 {
                     continue;
@@ -292,7 +294,7 @@ namespace HHW.Service
                 {
                     try
                     {
-                        iStartSystem.Execute(component);
+                        iStartSystem.Execute(obj);
                     }
                     catch (Exception e)
                     {
@@ -309,17 +311,17 @@ namespace HHW.Service
             while(updates.Count > 0)
             {
                 long instanceId = updates.Dequeue();
-                Component component;
-                if(!allComponents.TryGetValue(instanceId, out component))
+                Object obj;
+                if(!allComponents.TryGetValue(instanceId, out obj))
                 {
                     continue;
                 }
-                if(component.IsDisposed)
+                if(obj.IsDisposed)
                 {
                     continue;
                 }
 
-                List<IUpdateSystem> iUpdateSystems = updateSystems[component.GetType()];
+                List<IUpdateSystem> iUpdateSystems = updateSystems[obj.GetType()];
                 if(iUpdateSystems == null)
                 {
                     continue;
@@ -330,7 +332,7 @@ namespace HHW.Service
                 {
                     try
                     {
-                        iUpdateSystem.Execute(component);
+                        iUpdateSystem.Execute(obj);
                     }
                     catch (Exception e)
                     {
@@ -342,9 +344,9 @@ namespace HHW.Service
             SwapHelper.Swap(ref updates, ref tempUpdates);
         }
 
-        public static void Destroy(Component component)
+        public static void Destroy(Object obj)
         {
-            List<IDestroySystem> iDestroySystems = destroySystems[component.GetType()];
+            List<IDestroySystem> iDestroySystems = destroySystems[obj.GetType()];
             if(iDestroySystems == null)
             {
                 return;
@@ -359,7 +361,7 @@ namespace HHW.Service
 
                 try
                 {
-                    iDestroySystem.Execute(component);
+                    iDestroySystem.Execute(obj);
                 }
                 catch (Exception e)
                 {
