@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using static HHW.Service.FastInvoke;
 
 namespace HHW.Service
 {
@@ -11,82 +12,93 @@ namespace HHW.Service
         Hotfix,
         Editor,
     }
+    public struct InvokeInfo
+    {
+        public long id;
+        public FastInvokeHandler invoke;
+
+        public InvokeInfo(long id, FastInvokeHandler invoke)
+        {
+            this.id = id;
+            this.invoke = invoke;
+        }
+    }
     public static class EventSystem
     {
         private static readonly Dictionary<long, Object> allComponents = new Dictionary<long, Object>();
-        private static readonly Dictionary<DLLType, Assembly> assemblies = new Dictionary<DLLType, Assembly>();
-        private static readonly UnOrderMultiMap<Type, IAwakeSystem> awakeSystems = new UnOrderMultiMap<Type, IAwakeSystem>();
-        private static readonly UnOrderMultiMap<Type, IStartSystem> startSystems = new UnOrderMultiMap<Type, IStartSystem>();
-        private static readonly UnOrderMultiMap<Type, ILoadSystem> loadSystems = new UnOrderMultiMap<Type, ILoadSystem>();
-        private static readonly UnOrderMultiMap<Type, IUpdateSystem> updateSystems = new UnOrderMultiMap<Type, IUpdateSystem>();
-        private static readonly UnOrderMultiMap<Type, IDestroySystem> destroySystems = new UnOrderMultiMap<Type, IDestroySystem>();
+        //private static readonly Dictionary<DLLType, Assembly> assemblies = new Dictionary<DLLType, Assembly>();
+        //private static readonly UnOrderMultiMap<Type, IAwakeSystem> awakeSystems = new UnOrderMultiMap<Type, IAwakeSystem>();
+        //private static readonly UnOrderMultiMap<Type, IStartSystem> startSystems = new UnOrderMultiMap<Type, IStartSystem>();
+        //private static readonly UnOrderMultiMap<Type, ILoadSystem> loadSystems = new UnOrderMultiMap<Type, ILoadSystem>();
+        //private static readonly UnOrderMultiMap<Type, IUpdateSystem> updateSystems = new UnOrderMultiMap<Type, IUpdateSystem>();
+        //private static readonly UnOrderMultiMap<Type, IDestroySystem> destroySystems = new UnOrderMultiMap<Type, IDestroySystem>();
 
-        private static readonly Queue<long> starts = new Queue<long>();
+        private static readonly Queue<InvokeInfo> starts = new Queue<InvokeInfo>();
 
-        private static Queue<long> loaders = new Queue<long>();
-        private static Queue<long> tempLoaders = new Queue<long>();
+        private static Queue<InvokeInfo> loaders = new Queue<InvokeInfo>();
+        private static Queue<InvokeInfo> tempLoaders = new Queue<InvokeInfo>();
 
-        private static Queue<long> updates = new Queue<long>();
-        private static Queue<long> tempUpdates = new Queue<long>();
+        private static Queue<InvokeInfo> updates = new Queue<InvokeInfo>();
+        private static Queue<InvokeInfo> tempUpdates = new Queue<InvokeInfo>();
 
-        public static Assembly[] GetAll()
-        {
-            return assemblies.Values.ToArray();
-        }
+        //public static Assembly[] GetAll()
+        //{
+        //    return assemblies.Values.ToArray();
+        //}
 
-        public static void Add(DLLType dllType, Assembly assembly)
-        {
-            assemblies[dllType] = assembly;
+        //public static void Add(DLLType dllType, Assembly assembly)
+        //{
+        //    assemblies[dllType] = assembly;
 
-            awakeSystems.Clear();
-            startSystems.Clear();
-            loadSystems.Clear();
-            updateSystems.Clear();
-            destroySystems.Clear();
+        //    awakeSystems.Clear();
+        //    startSystems.Clear();
+        //    loadSystems.Clear();
+        //    updateSystems.Clear();
+        //    destroySystems.Clear();
 
-            Type[] types = DllHelper.GetMonoTypes(GetAll());
-            foreach (Type type in types)
-            {
-                if (type.IsInterface || type.IsAbstract || !typeof(ISystem).IsAssignableFrom(type))
-                {
-                    continue;
-                }
+        //    Type[] types = DllHelper.GetMonoTypes(GetAll());
+        //    foreach (Type type in types)
+        //    {
+        //        if (type.IsInterface || type.IsAbstract || !typeof(ISystem).IsAssignableFrom(type))
+        //        {
+        //            continue;
+        //        }
 
-                object obj = Activator.CreateInstance(type);
+        //        object obj = Activator.CreateInstance(type);
 
-                ILoadSystem loadSystem = obj as ILoadSystem;
-                if(loadSystem != null)
-                {
-                    loadSystems.Add(loadSystem.Type(), loadSystem);
-                }
+        //        ILoadSystem loadSystem = obj as ILoadSystem;
+        //        if(loadSystem != null)
+        //        {
+        //            loadSystems.Add(loadSystem.Type(), loadSystem);
+        //        }
 
-                IAwakeSystem awakeSystem = obj as IAwakeSystem;
-                if(awakeSystem != null)
-                {
-                    awakeSystems.Add(awakeSystem.Type(), awakeSystem);
-                }
+        //        IAwakeSystem awakeSystem = obj as IAwakeSystem;
+        //        if(awakeSystem != null)
+        //        {
+        //            awakeSystems.Add(awakeSystem.Type(), awakeSystem);
+        //        }
 
-                IStartSystem startSystem = obj as IStartSystem;
-                if(startSystem != null)
-                {
-                    startSystems.Add(startSystem.Type(), startSystem);
-                }
+        //        IStartSystem startSystem = obj as IStartSystem;
+        //        if(startSystem != null)
+        //        {
+        //            startSystems.Add(startSystem.Type(), startSystem);
+        //        }
 
-                IUpdateSystem updateSystem = obj as IUpdateSystem;
-                if(updateSystem != null)
-                {
-                    updateSystems.Add(updateSystem.Type(), updateSystem);
-                }
+        //        IUpdateSystem updateSystem = obj as IUpdateSystem;
+        //        if(updateSystem != null)
+        //        {
+        //            updateSystems.Add(updateSystem.Type(), updateSystem);
+        //        }
 
-                IDestroySystem destroySystem = obj as IDestroySystem;
-                if(destroySystem != null)
-                {
-                    destroySystems.Add(destroySystem.Type(), destroySystem);
-                }
-            }
+        //        IDestroySystem destroySystem = obj as IDestroySystem;
+        //        if(destroySystem != null)
+        //        {
+        //            destroySystems.Add(destroySystem.Type(), destroySystem);
+        //        }
+        //    }
 
-            Load();
-        }
+        //    Load();
+        //}
 
         public static void Add(Object obj)
         {
@@ -94,17 +106,20 @@ namespace HHW.Service
 
             Type type = obj.GetType();
 
-            if(loadSystems.ContainsKey(type))
+            MethodInfo loadInfo = type.GetMethod("Load");
+            if(loadInfo != null)
             {
-                loaders.Enqueue(obj.id);
+                loaders.Enqueue(new InvokeInfo(obj.id, GetMethodInvoker(loadInfo)));
             }
-            if(startSystems.ContainsKey(type))
+            MethodInfo startInfo = type.GetMethod("Start");
+            if(startInfo != null)
             {
-                starts.Enqueue(obj.id);
+                starts.Enqueue(new InvokeInfo(obj.id, GetMethodInvoker(startInfo)));
             }
-            if(updateSystems.ContainsKey(type))
+            MethodInfo updateInfo = type.GetMethod("Update");
+            if(updateInfo != null)
             {
-                updates.Enqueue(obj.id);
+                updates.Enqueue(new InvokeInfo(obj.id, GetMethodInvoker(updateInfo)));
             }
         }
 
@@ -112,33 +127,25 @@ namespace HHW.Service
         {
             while(loaders.Count > 0)
             {
-                long instanceId = loaders.Dequeue();
+                InvokeInfo invokeInfo = loaders.Dequeue();
                 Object obj;
-                if(!allComponents.TryGetValue(instanceId, out obj))
+                if (!allComponents.TryGetValue(invokeInfo.id, out obj))
                 {
                     continue;
                 }
-                if(obj.IsDisposed)
-                {
-                    continue;
-                }
-                List<ILoadSystem> iLoadSystems = loadSystems[obj.GetType()];
-                if(iLoadSystems == null)
+                if (obj.IsDisposed)
                 {
                     continue;
                 }
 
-                tempLoaders.Enqueue(instanceId);
-                foreach (ILoadSystem iLoadSystem in iLoadSystems)
+                tempLoaders.Enqueue(invokeInfo);
+                try
                 {
-                    try
-                    {
-                        iLoadSystem.Execute(obj);
-                    }
-                    catch(Exception e)
-                    {
-                        Console.WriteLine(e.ToString());
-                    }
+                    invokeInfo.invoke(obj, null);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.ToString());
                 }
             }
 
@@ -147,30 +154,15 @@ namespace HHW.Service
 
         public static void Awake(Object obj)
         {
-            List<IAwakeSystem> iAwakeSystems = awakeSystems[obj.GetType()];
-            if(iAwakeSystems == null)
+            Type type = obj.GetType();
+            MethodInfo awakeInfo = type.GetMethod("Awake");
+            if (awakeInfo != null)
             {
-                return;
-            }
-
-            foreach (IAwakeSystem iAwakeSystem in iAwakeSystems)
-            {
-                if(iAwakeSystem == null)
-                {
-                    continue;
-                }
-
-                IAwake iAwake = iAwakeSystem as IAwake;
-                if(iAwake == null)
-                {
-                    continue;
-                }
-
                 try
                 {
-                    iAwake.Execute(obj);
+                    awakeInfo.Invoke(obj, null);
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     Console.WriteLine(e.ToString());
                 }
@@ -179,28 +171,13 @@ namespace HHW.Service
 
         public static void Awake<A>(Object obj, A a)
         {
-            List<IAwakeSystem> iAwakeSystems = awakeSystems[obj.GetType()];
-            if(iAwakeSystems == null)
+            Type type = obj.GetType();
+            MethodInfo awakeInfo = type.GetMethod("Awake");
+            if (awakeInfo != null)
             {
-                return;
-            }
-
-            foreach (IAwakeSystem iAwakeSystem in iAwakeSystems)
-            {
-                if(iAwakeSystem == null)
-                {
-                    continue;
-                }
-
-                IAwake<A> iAwake = iAwakeSystem as IAwake<A>;
-                if (iAwake == null)
-                {
-                    continue;
-                }
-
                 try
                 {
-                    iAwake.Execute(obj, a);
+                    awakeInfo.Invoke(obj, new object[] { a });
                 }
                 catch (Exception e)
                 {
@@ -211,28 +188,13 @@ namespace HHW.Service
 
         public static void Awake<A, B>(Object obj, A a, B b)
         {
-            List<IAwakeSystem> iAwakeSystems = awakeSystems[obj.GetType()];
-            if (iAwakeSystems == null)
+            Type type = obj.GetType();
+            MethodInfo awakeInfo = type.GetMethod("Awake");
+            if (awakeInfo != null)
             {
-                return;
-            }
-
-            foreach (IAwakeSystem iAwakeSystem in iAwakeSystems)
-            {
-                if (iAwakeSystem == null)
-                {
-                    continue;
-                }
-
-                IAwake<A, B> iAwake = iAwakeSystem as IAwake<A, B>;
-                if (iAwake == null)
-                {
-                    continue;
-                }
-
                 try
                 {
-                    iAwake.Execute(obj, a, b);
+                    awakeInfo.Invoke(obj, new object[] { a, b });
                 }
                 catch (Exception e)
                 {
@@ -243,28 +205,13 @@ namespace HHW.Service
 
         public static void Awake<A, B, C>(Object obj, A a, B b, C c)
         {
-            List<IAwakeSystem> iAwakeSystems = awakeSystems[obj.GetType()];
-            if (iAwakeSystems == null)
+            Type type = obj.GetType();
+            MethodInfo awakeInfo = type.GetMethod("Awake");
+            if (awakeInfo != null)
             {
-                return;
-            }
-
-            foreach (IAwakeSystem iAwakeSystem in iAwakeSystems)
-            {
-                if (iAwakeSystem == null)
-                {
-                    continue;
-                }
-
-                IAwake<A, B, C> iAwake = iAwakeSystem as IAwake<A, B, C>;
-                if (iAwake == null)
-                {
-                    continue;
-                }
-
                 try
                 {
-                    iAwake.Execute(obj, a, b, c);
+                    awakeInfo.Invoke(obj, new object[] { a, b, c });
                 }
                 catch (Exception e)
                 {
@@ -277,29 +224,20 @@ namespace HHW.Service
         {
             while(starts.Count > 0)
             {
-                long instanceId = starts.Dequeue();
+                InvokeInfo invokeInfo = starts.Dequeue();
                 Object obj;
-                if(!allComponents.TryGetValue(instanceId, out obj))
+                if (!allComponents.TryGetValue(invokeInfo.id, out obj))
                 {
                     continue;
                 }
 
-                List<IStartSystem> iStartSystems = startSystems[obj.GetType()];
-                if(iStartSystems == null)
+                try
                 {
-                    continue;
+                    invokeInfo.invoke(obj, null);
                 }
-
-                foreach (IStartSystem iStartSystem in iStartSystems)
+                catch (Exception e)
                 {
-                    try
-                    {
-                        iStartSystem.Execute(obj);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e.ToString());
-                    }
+                    Console.WriteLine(e.ToString());
                 }
             }
         }
@@ -310,34 +248,25 @@ namespace HHW.Service
 
             while(updates.Count > 0)
             {
-                long instanceId = updates.Dequeue();
+                InvokeInfo invokeInfo = updates.Dequeue();
                 Object obj;
-                if(!allComponents.TryGetValue(instanceId, out obj))
+                if (!allComponents.TryGetValue(invokeInfo.id, out obj))
                 {
                     continue;
                 }
-                if(obj.IsDisposed)
-                {
-                    continue;
-                }
-
-                List<IUpdateSystem> iUpdateSystems = updateSystems[obj.GetType()];
-                if(iUpdateSystems == null)
+                if (obj.IsDisposed)
                 {
                     continue;
                 }
 
-                tempUpdates.Enqueue(instanceId);
-                foreach (IUpdateSystem iUpdateSystem in iUpdateSystems)
+                tempUpdates.Enqueue(invokeInfo);
+                try
                 {
-                    try
-                    {
-                        iUpdateSystem.Execute(obj);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e.ToString());
-                    }
+                    invokeInfo.invoke(obj, null);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.ToString());
                 }
             }
 
@@ -346,22 +275,13 @@ namespace HHW.Service
 
         public static void Destroy(Object obj)
         {
-            List<IDestroySystem> iDestroySystems = destroySystems[obj.GetType()];
-            if(iDestroySystems == null)
+            Type type = obj.GetType();
+            MethodInfo destroyInfo = type.GetMethod("Destroy");
+            if (destroyInfo != null)
             {
-                return;
-            }
-
-            foreach (IDestroySystem iDestroySystem in iDestroySystems)
-            {
-                if(iDestroySystem == null)
-                {
-                    continue;
-                }
-
                 try
                 {
-                    iDestroySystem.Execute(obj);
+                    destroyInfo.Invoke(obj, null);
                 }
                 catch (Exception e)
                 {
