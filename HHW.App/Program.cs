@@ -1,4 +1,7 @@
-﻿using System;
+﻿using HHW.Service;
+using System;
+using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HHW.App
@@ -7,31 +10,36 @@ namespace HHW.App
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
-            test();
-            call(10);
-        }
+            Game.Scene.AddComponent<OpcodeTypeComponent>();
+            Game.Scene.AddComponent<MessageDispatherComponent>();
+            Game.Scene.AddComponent<NetInnerComponent, IPEndPoint>(new IPEndPoint(IPAddress.Any, 7777));
+            Game.Scene.AddComponent<NetOuterComponent, IPEndPoint>(new IPEndPoint(IPAddress.Any, 6666));
 
-        static async void test()
-        {
-            int i = 0;
-            while(true)
+            var session = Game.Scene.GetComponent<NetInnerComponent>().Get(NetworkHelper.ToIPEndPoint("127.0.0.1", 7777));
+            test(session);
+
+            while (true)
             {
-                i = await test2(i);
-                Console.Write(i);
+                try
+                {
+                    Thread.Sleep(1);
+                    EventSystem.Update();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.ToString());
+                }
             }
         }
 
-        static Action<int> call;
-        static System.Threading.Tasks.Task<int> test2(int i)
+        static async void test(Session session)
         {
-            var tcs = new TaskCompletionSource<int>();
-            call = (v) =>
+            var result = (S2C_Login)await session.Call(new C2S_Login()
             {
-                tcs.SetResult(v);
-            };
-
-            return tcs.Task;
+                Account = "fzf",
+                Password = "123456"
+            });
+            Console.WriteLine(result.IsLogin);
         }
     }
 }

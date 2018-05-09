@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using static HHW.Service.FastInvoke;
 
@@ -106,17 +105,17 @@ namespace HHW.Service
 
             Type type = obj.GetType();
 
-            MethodInfo loadInfo = type.GetMethod("Load");
+            MethodInfo loadInfo = type.GetMethod("Load", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new Type[] { }, null);
             if(loadInfo != null)
             {
                 loaders.Enqueue(new InvokeInfo(obj.id, GetMethodInvoker(loadInfo)));
             }
-            MethodInfo startInfo = type.GetMethod("Start");
+            MethodInfo startInfo = type.GetMethod("Start", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new Type[] { }, null);
             if(startInfo != null)
             {
                 starts.Enqueue(new InvokeInfo(obj.id, GetMethodInvoker(startInfo)));
             }
-            MethodInfo updateInfo = type.GetMethod("Update");
+            MethodInfo updateInfo = type.GetMethod("Update", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new Type[] { }, null);
             if(updateInfo != null)
             {
                 updates.Enqueue(new InvokeInfo(obj.id, GetMethodInvoker(updateInfo)));
@@ -155,7 +154,7 @@ namespace HHW.Service
         public static void Awake(Object obj)
         {
             Type type = obj.GetType();
-            MethodInfo awakeInfo = type.GetMethod("Awake");
+            MethodInfo awakeInfo = type.GetMethod("Awake", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new Type[] { }, null);
             if (awakeInfo != null)
             {
                 try
@@ -172,7 +171,7 @@ namespace HHW.Service
         public static void Awake<A>(Object obj, A a)
         {
             Type type = obj.GetType();
-            MethodInfo awakeInfo = type.GetMethod("Awake");
+            MethodInfo awakeInfo = type.GetMethod("Awake", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new Type[] { typeof(A) }, null);
             if (awakeInfo != null)
             {
                 try
@@ -189,7 +188,7 @@ namespace HHW.Service
         public static void Awake<A, B>(Object obj, A a, B b)
         {
             Type type = obj.GetType();
-            MethodInfo awakeInfo = type.GetMethod("Awake");
+            MethodInfo awakeInfo = type.GetMethod("Awake", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new Type[] { typeof(A), typeof(B) }, null);
             if (awakeInfo != null)
             {
                 try
@@ -206,7 +205,7 @@ namespace HHW.Service
         public static void Awake<A, B, C>(Object obj, A a, B b, C c)
         {
             Type type = obj.GetType();
-            MethodInfo awakeInfo = type.GetMethod("Awake");
+            MethodInfo awakeInfo = type.GetMethod("Awake", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new Type[] { typeof(A), typeof(B), typeof(C) }, null);
             if (awakeInfo != null)
             {
                 try
@@ -276,7 +275,7 @@ namespace HHW.Service
         public static void Destroy(Object obj)
         {
             Type type = obj.GetType();
-            MethodInfo destroyInfo = type.GetMethod("Destroy");
+            MethodInfo destroyInfo = type.GetMethod("Destroy", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new Type[] { }, null);
             if (destroyInfo != null)
             {
                 try

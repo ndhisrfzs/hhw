@@ -15,7 +15,7 @@ namespace HHW.Service
         public IMessagePacker MessagePacker { get; set; }
         public IMessageDispatcher MessageDispatcher { get; set; }
 
-        public void Awake(NetworkComponent self)
+        public void Awake()
         {
             this.Server = new TServer();
         }

@@ -9,15 +9,15 @@ namespace HHW.Service
 {
     public sealed class TServer : AServer
     {
-        private TcpListener acceptor;
+        private TcpListener listener;
         private readonly Dictionary<long, AClient> idClients = new Dictionary<long, AClient>();
 
         public TServer(IPEndPoint ipEndPoint)
         {
-            this.acceptor = new TcpListener(ipEndPoint);
-            this.acceptor.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-            this.acceptor.Server.NoDelay = true;
-            this.acceptor.Start();
+            this.listener = new TcpListener(ipEndPoint);
+            this.listener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            this.listener.Server.NoDelay = true;
+            this.listener.Start();
         }
 
         public TServer()
@@ -27,7 +27,7 @@ namespace HHW.Service
 
         public override void Dispose()
         {
-            if(this.acceptor == null)
+            if(this.listener == null)
             {
                 return;
             }
@@ -36,8 +36,8 @@ namespace HHW.Service
                 AClient client = this.idClients[id];
                 client.Dispose();
             }
-            this.acceptor.Stop();
-            this.acceptor = null;
+            this.listener.Stop();
+            this.listener = null;
 
             base.Dispose();
         }
@@ -51,12 +51,12 @@ namespace HHW.Service
 
         public override async Task<AClient> AcceptClient()
         {
-            if(this.acceptor == null)
+            if(this.listener == null)
             {
                 throw new Exception("server construct must use host and port param");
             }
 
-            TcpClient tcpClient = await this.acceptor.AcceptTcpClientAsync();
+            TcpClient tcpClient = await this.listener.AcceptTcpClientAsync();
             AClient client = new TClient(tcpClient, this);
             this.idClients[client.id] = client;
             return client;

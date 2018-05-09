@@ -7,15 +7,15 @@ namespace HHW.Service
 {
     public static class DllHelper
     {
-        public static Assembly GetHotfixAssembly()
+        public static Assembly GetLogicAssembly()
         {
-            byte[] dllBytes = File.ReadAllBytes("./Hotfix.dll");
-            byte[] pdbBytes = File.ReadAllBytes("./Hotfix.pdb");
+            byte[] dllBytes = File.ReadAllBytes("./Logic.dll");
+            byte[] pdbBytes = File.ReadAllBytes("./Logic.pdb");
             Assembly assembly = Assembly.Load(dllBytes, pdbBytes);
             return assembly;
         }
 
-        public static Type[] GetMonoTypes(Assembly[] assemblies)
+        public static Type[] GetMonoTypes(params Assembly[] assemblies)
         {
             List<Type> types = new List<Type>();
             foreach (Assembly assembly in assemblies)

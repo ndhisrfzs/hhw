@@ -7,20 +7,6 @@ using System.Threading.Tasks;
 
 namespace HHW.Service
 {
-    public class SessionAwakeSystem : AwakeSystem<Session, NetworkComponent, AClient>
-    {
-        public override void Awake(Session self, NetworkComponent a, AClient b)
-        {
-            self.Awake(a, b);
-        }
-    }
-    public class SessionStartSystem : StartSystem<Session>
-    {
-        public override void Start(Session self)
-        {
-            self.Start();
-        }
-    }
     public sealed class Session : Entity
     {
         private static int RpcId { get; set; }
@@ -134,7 +120,7 @@ namespace HHW.Service
 
             OpcodeTypeComponent opcodeTypeComponent = this.Network.Parent.GetComponent<OpcodeTypeComponent>();
             Type responseType = opcodeTypeComponent.GetType(opcode);
-            object message = this.Network.MessagePacker.DeserializeFrom(responseType, packet.Bytes, Packet.Index, packet.Length - Packet.Index);
+            object message = this.Network.MessagePacker.DeserializeFrom(responseType, packet.Bytes, Packet.Index, packet.Length);
 
             IResponse response = message as IResponse;
             if(response == null)
