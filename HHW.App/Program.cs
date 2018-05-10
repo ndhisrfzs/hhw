@@ -15,7 +15,9 @@ namespace HHW.App
             Game.Scene.AddComponent<NetInnerComponent, IPEndPoint>(new IPEndPoint(IPAddress.Any, 7777));
             Game.Scene.AddComponent<NetOuterComponent, IPEndPoint>(new IPEndPoint(IPAddress.Any, 6666));
 
-            var session = Game.Scene.GetComponent<NetInnerComponent>().Get(NetworkHelper.ToIPEndPoint("127.0.0.1", 7777));
+            Game.Client.AddComponent<NetInnerComponent>();
+            Game.Client.AddComponent<OpcodeTypeComponent>();
+            var session = Game.Client.GetComponent<NetInnerComponent>().Create(NetworkHelper.ToIPEndPoint("127.0.0.1", 7777));
             test(session);
 
             while (true)

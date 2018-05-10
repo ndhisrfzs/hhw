@@ -1,19 +1,15 @@
 ﻿namespace HHW.Service
 {
-    [Message(1)]
-    public class C2S_Login : IRequest
+    [Message(MessageOpcode.C2S_Login)]
+    public class C2S_Login : RequestMessage
     {
-        public int RpcId { get; set; }
         public string Account { get; set; }
         public string Password { get; set; }
     }
 
-    [Message(2)]
-    public class S2C_Login : IResponse
+    [Message(MessageOpcode.S2C_Login)]
+    public class S2C_Login : ResponseMessage
     {
-        public int RpcId { get; set; }
-        public int Error { get; set; }
-        public string Message { get; set; } 
         public bool IsLogin { get; set; }
     }
 }

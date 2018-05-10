@@ -44,7 +44,6 @@ namespace HHW.Service
         {
             AClient client = await this.Server.AcceptClient();
             Session session = ObjectFactory.Create<Session, NetworkComponent, AClient>(this, client);
-            session.Network = this;
             client.ErrorCallback += (c, e) => { this.Remove(session.id); };
             this.sessions.Add(session.id, session);
             return session;
@@ -74,7 +73,6 @@ namespace HHW.Service
             {
                 AClient client = this.Server.ConnectClient(ipEndPoint);
                 Session session = ObjectFactory.Create<Session, NetworkComponent, AClient>(this, client);
-                session.Network = this;
                 client.ErrorCallback += (c, e) => { this.Remove(session.id); };
                 this.sessions.Add(session.id, session);
                 return session;

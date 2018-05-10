@@ -4,7 +4,7 @@ namespace HHW.Service
 {
     public class DynamicFieldInfo
     {
-        public FieldInfo TheField;
+        public PropertyInfo TheField;
 
         public string FieldName;
 

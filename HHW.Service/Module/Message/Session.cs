@@ -20,6 +20,7 @@ namespace HHW.Service
         public void Awake(NetworkComponent net, AClient client)
         {
             this.client = client;
+            this.Network = net;
             this.requestCallback.Clear();
         }
 
@@ -111,13 +112,14 @@ namespace HHW.Service
             byte flag = packet.Flag;
             ushort opcode = packet.Opcode;
 
-            //flag为0表示rpc请求,1表示rpc返回消息
             if((flag & 0x01) == 0)
             {
+                //flag为0表示rpc请求
                 this.Network.MessageDispatcher.Dispatch(this, packet);
                 return;
             }
 
+            //flag为1表示rpc返回消息
             OpcodeTypeComponent opcodeTypeComponent = this.Network.Parent.GetComponent<OpcodeTypeComponent>();
             Type responseType = opcodeTypeComponent.GetType(opcode);
             object message = this.Network.MessagePacker.DeserializeFrom(responseType, packet.Bytes, Packet.Index, packet.Length);

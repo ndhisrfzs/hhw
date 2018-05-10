@@ -26,11 +26,6 @@ namespace HHW.Service
     {
         private static readonly Dictionary<long, Object> allComponents = new Dictionary<long, Object>();
         //private static readonly Dictionary<DLLType, Assembly> assemblies = new Dictionary<DLLType, Assembly>();
-        //private static readonly UnOrderMultiMap<Type, IAwakeSystem> awakeSystems = new UnOrderMultiMap<Type, IAwakeSystem>();
-        //private static readonly UnOrderMultiMap<Type, IStartSystem> startSystems = new UnOrderMultiMap<Type, IStartSystem>();
-        //private static readonly UnOrderMultiMap<Type, ILoadSystem> loadSystems = new UnOrderMultiMap<Type, ILoadSystem>();
-        //private static readonly UnOrderMultiMap<Type, IUpdateSystem> updateSystems = new UnOrderMultiMap<Type, IUpdateSystem>();
-        //private static readonly UnOrderMultiMap<Type, IDestroySystem> destroySystems = new UnOrderMultiMap<Type, IDestroySystem>();
 
         private static readonly Queue<InvokeInfo> starts = new Queue<InvokeInfo>();
 
@@ -48,54 +43,6 @@ namespace HHW.Service
         //public static void Add(DLLType dllType, Assembly assembly)
         //{
         //    assemblies[dllType] = assembly;
-
-        //    awakeSystems.Clear();
-        //    startSystems.Clear();
-        //    loadSystems.Clear();
-        //    updateSystems.Clear();
-        //    destroySystems.Clear();
-
-        //    Type[] types = DllHelper.GetMonoTypes(GetAll());
-        //    foreach (Type type in types)
-        //    {
-        //        if (type.IsInterface || type.IsAbstract || !typeof(ISystem).IsAssignableFrom(type))
-        //        {
-        //            continue;
-        //        }
-
-        //        object obj = Activator.CreateInstance(type);
-
-        //        ILoadSystem loadSystem = obj as ILoadSystem;
-        //        if(loadSystem != null)
-        //        {
-        //            loadSystems.Add(loadSystem.Type(), loadSystem);
-        //        }
-
-        //        IAwakeSystem awakeSystem = obj as IAwakeSystem;
-        //        if(awakeSystem != null)
-        //        {
-        //            awakeSystems.Add(awakeSystem.Type(), awakeSystem);
-        //        }
-
-        //        IStartSystem startSystem = obj as IStartSystem;
-        //        if(startSystem != null)
-        //        {
-        //            startSystems.Add(startSystem.Type(), startSystem);
-        //        }
-
-        //        IUpdateSystem updateSystem = obj as IUpdateSystem;
-        //        if(updateSystem != null)
-        //        {
-        //            updateSystems.Add(updateSystem.Type(), updateSystem);
-        //        }
-
-        //        IDestroySystem destroySystem = obj as IDestroySystem;
-        //        if(destroySystem != null)
-        //        {
-        //            destroySystems.Add(destroySystem.Type(), destroySystem);
-        //        }
-        //    }
-
         //    Load();
         //}
 

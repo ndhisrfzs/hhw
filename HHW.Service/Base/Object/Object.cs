@@ -8,11 +8,12 @@ namespace HHW.Service
         protected Object()
         {
             this.id = IdGenerater.GenerateId();
-            EventSystem.Add(this);
+            EventSystem.Add(this);            
         }
         protected Object(long id)
         {
             this.id = id;
+            EventSystem.Add(this);            
         }
 
         private bool isFromPool;

@@ -35,6 +35,24 @@ namespace HHW.Service
 
 
         /// <summary>
+        /// 获取所有字段，包括继承来的父类字段
+        /// </summary>
+        /// <param name="TheType"></param>
+        /// <param name="bindingFlags"></param>
+        /// <returns></returns>
+        private static List<FieldInfo> GetAllFields(this Type TheType, BindingFlags bindingFlags)
+        {
+            List<FieldInfo> fieldInfoes = new List<FieldInfo>();
+            Type thisType = TheType;
+            while (thisType.IsSubclassOf(typeof(object)))
+            {
+                fieldInfoes.AddRange(thisType.GetFields(bindingFlags));
+                thisType = thisType.BaseType;
+            }
+
+            return fieldInfoes;
+        }
+        /// <summary>
         /// 序列化一个对象到Byte数组，无法序列化，将抛出ArgumentException异常
         /// </summary>
         /// <param name="obj">对象</param>
@@ -173,11 +191,11 @@ namespace HHW.Service
                                         }
                                         else
                                         {
-                                            FieldInfo[] fi = nowSerializeInfo.TheType.GetFields(AllInstanceBindingFlags).OrderBy(c => c.Name).ToArray();
+                                            PropertyInfo[] fi = nowSerializeInfo.TheType.GetProperties(AllInstanceBindingFlags).OrderBy(c => c.Name).ToArray();
                                             List<DynamicFieldInfo> tempFis = new List<DynamicFieldInfo>();
                                             for (int i = 0; i < fi.Length; i++)
                                             {
-                                                FieldInfo fiNow = fi[i];
+                                                PropertyInfo fiNow = fi[i];
                                                 object[] at = fiNow.GetCustomAttributes(typeof(System.NonSerializedAttribute), true);
                                                 if (at.Length == 0)
                                                 {
@@ -507,11 +525,11 @@ namespace HHW.Service
                                         }
                                         else
                                         {
-                                            FieldInfo[] fi = nowSerializeInfo.TheType.GetFields(AllInstanceBindingFlags).OrderBy(c => c.Name).ToArray();
+                                            PropertyInfo[] fi = nowSerializeInfo.TheType.GetProperties(AllInstanceBindingFlags).OrderBy(c => c.Name).ToArray();
                                             List<DynamicFieldInfo> tempFis = new List<DynamicFieldInfo>();
                                             for (int i = 0; i < fi.Length; i++)
                                             {
-                                                FieldInfo fiNow = fi[i];
+                                                PropertyInfo fiNow = fi[i];
                                                 object[] at = fiNow.GetCustomAttributes(typeof(System.NonSerializedAttribute), true);
                                                 if (at.Length == 0)
                                                 {
@@ -583,7 +601,7 @@ namespace HHW.Service
                                     else
                                     {
                                         DynamicFieldInfo tempDFI = nowSerializeInfo.FieldInfos[0];
-                                        innerSerializeInfo = new SerializeInfo(tempDFI.TheField.FieldType, nextSeekTo);
+                                        innerSerializeInfo = new SerializeInfo(tempDFI.TheField.PropertyType, nextSeekTo);
                                     }
                                     innerSerializeInfo.FatherSerializeInfo = nowSerializeInfo;
                                     bufStack.Push(innerSerializeInfo);
@@ -643,7 +661,7 @@ namespace HHW.Service
                             else
                             {
                                 DynamicFieldInfo tempDFI = nowSerializeInfo.FieldInfos[nowSerializeInfo.Index];
-                                innerSerializeInfo = new SerializeInfo(tempDFI.TheField.FieldType, nextSeekTo);
+                                innerSerializeInfo = new SerializeInfo(tempDFI.TheField.PropertyType, nextSeekTo);
                             }
                             innerSerializeInfo.FatherSerializeInfo = nowSerializeInfo;
                             bufStack.Push(innerSerializeInfo);
@@ -777,7 +795,7 @@ namespace HHW.Service
             }
             else
             {
-                Type fieldType = FieldInfos[Index].TheField.FieldType;
+                Type fieldType = FieldInfos[Index].TheField.PropertyType;
 
                 //专门处理Nullable类型
                 if (fieldType.IsGenericType)
