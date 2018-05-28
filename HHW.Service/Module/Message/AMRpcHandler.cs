@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Threading.Tasks;
 
 namespace HHW.Service
 {
@@ -12,30 +11,31 @@ namespace HHW.Service
             response.Message = e.ToString();
             reply(response);
         }
-        protected abstract void Run(Session session, Request message, Action<Response> reply);
+        protected abstract Task<Response> Run(Session session, Request message);//, Action<Response> reply);
 
-        public void Handle(Session session, object message)
+        public async void Handle(Session session, object message)
         {
             try
             {
                 Request request = message as Request;
-                if(request == null)
+                if (request == null)
                 {
                     return;
                 }
 
-                int rpcId = request.RpcId;
-                this.Run(session, request, response =>
+                uint rpcId = request.RpcId;
+                var response = await this.Run(session, request);
+                //response =>
+                //{
+                if (session.IsDisposed)
                 {
-                    if(session.IsDisposed)
-                    {
-                        return;
-                    }
-                    response.RpcId = rpcId;
-                    session.Reply(response);
-                });
+                    return;
+                }
+                response.RpcId = rpcId;
+                session.Reply(response);
+                //}
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
             }

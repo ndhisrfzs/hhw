@@ -9,10 +9,10 @@ namespace HHW.Service
 {
     public sealed class Session : Entity
     {
-        private static int RpcId { get; set; }
+        private static uint RpcId { get; set; }
         private AClient client;
 
-        private readonly Dictionary<int, Action<IResponse>> requestCallback = new Dictionary<int, Action<IResponse>>();
+        private readonly Dictionary<uint, Action<IResponse>> requestCallback = new Dictionary<uint, Action<IResponse>>();
         private readonly List<byte[]> byteses = new List<byte[]> { new byte[1], new byte[0], new byte[0] };
 
         public NetworkComponent Network { get; set; }
@@ -42,7 +42,7 @@ namespace HHW.Service
 
             foreach (Action<IResponse> action in this.requestCallback.Values.ToArray())
             {
-                action.Invoke(new ResponseMessage { Error = ErrorCode.ERR_SocketDisconnected });
+                action.Invoke(new Response { Error = ErrorCode.ERR_SocketDisconnected });
             }
 
             this.client.Dispose();
@@ -143,7 +143,7 @@ namespace HHW.Service
 
         public Task<IResponse> Call(IRequest request)
         {
-            int rpcId = ++RpcId;
+            uint rpcId = ++RpcId;
             var tcs = new TaskCompletionSource<IResponse>();
 
             this.requestCallback[rpcId] = (response) =>
@@ -170,7 +170,7 @@ namespace HHW.Service
 
         public Task<IResponse> Call(IResponse request, CancellationToken cancellationToken)
         {
-            int rpcId = ++RpcId;
+            uint rpcId = ++RpcId;
             var tcs = new TaskCompletionSource<IResponse>();
 
             this.requestCallback[rpcId] = (response) =>

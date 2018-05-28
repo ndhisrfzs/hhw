@@ -5,16 +5,25 @@ namespace HHW.Service
 {
     public class MessageDispatherComponent : Component
     {
+        public AppType AppType;
         private readonly Dictionary<ushort, List<IMHandler>> handlers = new Dictionary<ushort, List<IMHandler>>();
 
-        public void Awake()
+        public void Awake(AppType appType)
         {
+            this.AppType = appType;
             this.handlers.Clear();
 
             Type[] types = DllHelper.GetMonoTypes(DllHelper.GetLogicAssembly());
             foreach (Type type in types)
             {
-                if (type.IsInterface || type.IsAbstract || !typeof(IMHandler).IsAssignableFrom(type))
+                object[] attrs = type.GetCustomAttributes(typeof(MessageHandlerAttribute), false);
+                if (attrs.Length == 0)
+                {
+                    continue;
+                }
+
+                MessageHandlerAttribute messageHandlerAttribute = attrs[0] as MessageHandlerAttribute;
+                if(!messageHandlerAttribute.Type.Is(this.AppType))
                 {
                     continue;
                 }

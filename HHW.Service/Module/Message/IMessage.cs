@@ -2,7 +2,7 @@
 {
     public interface IMessage
     {
-        int RpcId { get; set; }
+        uint RpcId { get; set; }
     }
 
     public interface IRequest : IMessage
@@ -11,19 +11,19 @@
 
     public interface IResponse : IMessage
     {
-        int Error { get; set; }
+        short Error { get; set; }
         string Message { get; set; }
     }
 
-    public class RequestMessage : IRequest
+    public class Request : IRequest
     {
-        public int RpcId { get; set; }
+        public uint RpcId { get; set; }
     }
 
-    public class ResponseMessage : IResponse
+    public class Response : IResponse
     {
-        public int Error { get; set; }
+        public uint RpcId { get; set; }
+        public short Error { get; set; }
         public string Message { get; set; }
-        public int RpcId { get; set; }
     }
 }
