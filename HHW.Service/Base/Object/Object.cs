@@ -8,12 +8,10 @@ namespace HHW.Service
         protected Object()
         {
             this.id = IdGenerater.GenerateId();
-            EventSystem.Add(this);            
         }
         protected Object(long id)
         {
             this.id = id;
-            EventSystem.Add(this);            
         }
 
         private bool isFromPool;
@@ -29,12 +27,11 @@ namespace HHW.Service
                 if (id == 0)
                 {
                     id = IdGenerater.GenerateId();
-                    EventSystem.Add(this);
                 }
             }
         }
 
-        public Entity Parent { get; set; }
+        public Object Parent { get; set; }
 
         public bool IsDisposed
         {
@@ -56,8 +53,6 @@ namespace HHW.Service
             {
                 ObjectPool.Recycle(this);
             }
-
-            EventSystem.Destroy(this);
         }
     }
 }

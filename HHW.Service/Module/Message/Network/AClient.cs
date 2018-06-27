@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading.Tasks;
 
 namespace HHW.Service
 {
@@ -11,7 +10,7 @@ namespace HHW.Service
         Connect,
         Accept,
     }
-    public abstract class AClient : Component
+    public abstract class AClient : Object
     {
         public ClientType ClientType { get; }
 
@@ -19,7 +18,7 @@ namespace HHW.Service
 
         public IPEndPoint RemoteAddress { get; protected set; }
 
-        private event Action<AClient, SocketError> errorCallback;
+        private Action<AClient, SocketError> errorCallback;
 
         public event Action<AClient, SocketError> ErrorCallback
         {
@@ -32,7 +31,6 @@ namespace HHW.Service
                 this.errorCallback -= value;
             }
         }
-
         protected void OnError(SocketError e)
         {
             if(this.IsDisposed)
@@ -42,17 +40,35 @@ namespace HHW.Service
             this.errorCallback?.Invoke(this, e);
         }
 
+        private Action<Packet> readCallback;
+        public event Action<Packet> ReadCallback
+        {
+            add
+            {
+                this.readCallback += value;
+            }
+            remove
+            {
+                this.readCallback -= value;
+            }
+        }
+
+        protected void OnRead(Packet packet)
+        {
+            this.readCallback.Invoke(packet);
+        }
+
         protected AClient(AServer server, ClientType clientType)
         {
             this.ClientType = clientType;
             this.server = server;
         }
 
+        public abstract void Start();
+
         public abstract void Send(byte[] buffer, int index, int length);
 
         public abstract void Send(List<byte[]> buffers);
-
-        public abstract Task<Packet> Recv();
 
         public override void Dispose()
         {

@@ -5,10 +5,17 @@
         public Component()
             :base()
         {
+            AddEventSystem();
         }
         public Component(long id)
             :base(id)
         {
+            AddEventSystem();
+        }
+
+        public void AddEventSystem()
+        {
+            EventSystem.Add(this);            
         }
 
         public override void Dispose()
@@ -19,6 +26,8 @@
             }
 
             base.Dispose();
+
+            EventSystem.Destroy(this);
         }
     }
 }

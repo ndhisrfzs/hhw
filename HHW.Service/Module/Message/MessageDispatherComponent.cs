@@ -35,7 +35,7 @@ namespace HHW.Service
                 }
 
                 Type messageType = iMHandler.GetMessageType();
-                ushort opcode = this.Parent.GetComponent<OpcodeTypeComponent>().GetOpcode(messageType);
+                ushort opcode = (this.Parent as Entity).GetComponent<OpcodeTypeComponent>().GetOpcode(messageType);
                 if(opcode == 0)
                 {
                     continue;

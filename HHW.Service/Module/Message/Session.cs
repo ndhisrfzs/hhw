@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,22 +12,30 @@ namespace HHW.Service
     {
         private static uint RpcId { get; set; }
         private AClient client;
+        public SocketError error;
 
         private readonly Dictionary<uint, Action<IResponse>> requestCallback = new Dictionary<uint, Action<IResponse>>();
         private readonly List<byte[]> byteses = new List<byte[]> { new byte[1], new byte[0], new byte[0] };
 
-        public NetworkComponent Network { get; set; }
-
-        public void Awake(NetworkComponent net, AClient client)
+        public NetworkComponent Network
         {
-            this.client = client;
-            this.Network = net;
-            this.requestCallback.Clear();
+            get
+            {
+                return (NetworkComponent)this.Parent;
+            }
         }
 
-        public void Start()
+        public void Awake(AClient client)
         {
-            this.StartRecv();
+            this.client = client;
+            this.requestCallback.Clear();
+            this.client.ErrorCallback += (c, e) =>
+            {
+                this.error = e;
+                this.Network.Remove(id);
+            };
+            this.client.ReadCallback += this.OnRead;
+            this.client.Start();
         }
 
         public override void Dispose()
@@ -66,38 +75,15 @@ namespace HHW.Service
             }
         }
 
-        private async void StartRecv()
+        public void OnRead(Packet packet)
         {
-            while(true)
+            try
             {
-                if(this.IsDisposed)
-                {
-                    return;
-                }
-
-                Packet packet;
-                try
-                {
-                    packet = await this.client.Recv();
-                    if(this.IsDisposed)
-                    {
-                        return;
-                    }
-                }
-                catch(Exception e)
-                {
-                    Console.WriteLine(e.ToString());
-                    continue;
-                }
-
-                try
-                {
-                    this.Execute(packet);
-                }
-                catch(Exception e)
-                {
-                    Console.WriteLine(e.ToString());
-                }
+                this.Execute(packet);
+            }
+            catch(Exception ex)
+            {
+                Log.Error(ex);
             }
         }
 
@@ -120,7 +106,7 @@ namespace HHW.Service
             }
 
             //flag为1表示rpc返回消息
-            OpcodeTypeComponent opcodeTypeComponent = this.Network.Parent.GetComponent<OpcodeTypeComponent>();
+            OpcodeTypeComponent opcodeTypeComponent = (this.Network.Parent as Entity).GetComponent<OpcodeTypeComponent>();
             Type responseType = opcodeTypeComponent.GetType(opcode);
             object message = this.Network.MessagePacker.DeserializeFrom(responseType, packet.Bytes, Packet.Index, packet.Length);
 
@@ -214,7 +200,7 @@ namespace HHW.Service
 
         public void Send(byte flag, IMessage message)
         {
-            OpcodeTypeComponent opcodeTypeComponent = this.Network.Parent.GetComponent<OpcodeTypeComponent>();
+            OpcodeTypeComponent opcodeTypeComponent = (this.Network.Parent as Entity).GetComponent<OpcodeTypeComponent>();
             ushort opcode = opcodeTypeComponent.GetOpcode(message.GetType());
             byte[] bytes = this.Network.MessagePacker.Serialize(message);
             Send(flag, opcode, bytes);

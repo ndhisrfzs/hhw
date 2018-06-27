@@ -7,23 +7,29 @@ namespace HHW.Service
     {
         private static readonly Dictionary<Type, Queue<Object>> dictionary = new Dictionary<Type, Queue<Object>>();
 
-        public static Object Fetch(Type type)
+        public static T Fetch<T>()
+            where T : Object
         {
+            Type type = typeof(T);
             if(!dictionary.TryGetValue(type, out Queue<Object> queue))
             {
                 queue = new Queue<Object>();
                 dictionary.Add(type, queue);
             }
 
-            Object obj;
+            T obj;
             if(queue.Count > 0)
             {
-                obj = queue.Dequeue();
+                obj = (T)queue.Dequeue();
                 obj.IsFromPool = true;
+                if(obj is Component)
+                {
+                    (obj as Component).AddEventSystem();
+                }
                 return obj;
             }
 
-            obj = (Object)Activator.CreateInstance(type);
+            obj = (T)Activator.CreateInstance(type);
             obj.IsFromPool = true;
             return obj;
         }

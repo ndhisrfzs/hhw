@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="NLog" Version="4.5.6" />
+    <PackageReference Include="NLog.Config" Version="4.5.6" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\HHW.Logic\HHW.Logic.csproj" />
     <ProjectReference Include="..\HHW.Service\HHW.Service.csproj" />
   </ItemGroup>

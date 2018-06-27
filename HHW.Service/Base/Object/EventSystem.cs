@@ -52,20 +52,20 @@ namespace HHW.Service
 
             Type type = obj.GetType();
 
-            MethodInfo loadInfo = type.GetMethod("Load", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new Type[] { }, null);
-            if(loadInfo != null)
+            FastInvokeHandler loadInvoke = FastInvokeCache.GetMethod(type, "Load"); //type.GetMethod("Load", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new Type[] { }, null);
+            if (loadInvoke != null)
             {
-                loaders.Enqueue(new InvokeInfo(obj.id, GetMethodInvoker(loadInfo)));
+                loaders.Enqueue(new InvokeInfo(obj.id, loadInvoke));
             }
-            MethodInfo startInfo = type.GetMethod("Start", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new Type[] { }, null);
-            if(startInfo != null)
+            FastInvokeHandler startInvoke = FastInvokeCache.GetMethod(type, "Start"); //type.GetMethod("Start", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new Type[] { }, null);
+            if (startInvoke != null)
             {
-                starts.Enqueue(new InvokeInfo(obj.id, GetMethodInvoker(startInfo)));
+                starts.Enqueue(new InvokeInfo(obj.id, startInvoke));
             }
-            MethodInfo updateInfo = type.GetMethod("Update", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new Type[] { }, null);
-            if(updateInfo != null)
+            FastInvokeHandler updateInvoke = FastInvokeCache.GetMethod(type, "Update"); //type.GetMethod("Update", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new Type[] { }, null);
+            if(updateInvoke != null)
             {
-                updates.Enqueue(new InvokeInfo(obj.id, GetMethodInvoker(updateInfo)));
+                updates.Enqueue(new InvokeInfo(obj.id, updateInvoke));
             }
         }
 
@@ -101,16 +101,17 @@ namespace HHW.Service
         public static void Awake(Object obj)
         {
             Type type = obj.GetType();
-            MethodInfo awakeInfo = type.GetMethod("Awake", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new Type[] { }, null);
-            if (awakeInfo != null)
+            FastInvokeHandler awakeInvoke = FastInvokeCache.GetMethod(type, "Awake");
+            //MethodInfo awakeInfo = type.GetMethod("Awake", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new Type[] { }, null);
+            if (awakeInvoke != null)
             {
                 try
                 {
-                    awakeInfo.Invoke(obj, null);
+                    awakeInvoke(obj, null);
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.ToString());
+                    Log.Error(e);
                 }
             }
         }
@@ -118,12 +119,13 @@ namespace HHW.Service
         public static void Awake<A>(Object obj, A a)
         {
             Type type = obj.GetType();
-            MethodInfo awakeInfo = type.GetMethod("Awake", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new Type[] { typeof(A) }, null);
-            if (awakeInfo != null)
+            FastInvokeHandler awakeInvoke = FastInvokeCache.GetMethod(type, "Awake", typeof(A));
+            //MethodInfo awakeInfo = type.GetMethod("Awake", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new Type[] { typeof(A) }, null);
+            if (awakeInvoke != null)
             {
                 try
                 {
-                    awakeInfo.Invoke(obj, new object[] { a });
+                    awakeInvoke(obj, new object[] { a });
                 }
                 catch (Exception e)
                 {
@@ -135,12 +137,13 @@ namespace HHW.Service
         public static void Awake<A, B>(Object obj, A a, B b)
         {
             Type type = obj.GetType();
-            MethodInfo awakeInfo = type.GetMethod("Awake", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new Type[] { typeof(A), typeof(B) }, null);
-            if (awakeInfo != null)
+            FastInvokeHandler awakeInvoke = FastInvokeCache.GetMethod(type, "Awake", typeof(A), typeof(B));
+            //MethodInfo awakeInfo = type.GetMethod("Awake", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new Type[] { typeof(A), typeof(B) }, null);
+            if (awakeInvoke != null)
             {
                 try
                 {
-                    awakeInfo.Invoke(obj, new object[] { a, b });
+                    awakeInvoke(obj, new object[] { a, b });
                 }
                 catch (Exception e)
                 {
@@ -152,12 +155,13 @@ namespace HHW.Service
         public static void Awake<A, B, C>(Object obj, A a, B b, C c)
         {
             Type type = obj.GetType();
-            MethodInfo awakeInfo = type.GetMethod("Awake", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new Type[] { typeof(A), typeof(B), typeof(C) }, null);
-            if (awakeInfo != null)
+            FastInvokeHandler awakeInvoke = FastInvokeCache.GetMethod(type, "Awake", typeof(A), typeof(B), typeof(C));
+            //MethodInfo awakeInfo = type.GetMethod("Awake", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new Type[] { typeof(A), typeof(B), typeof(C) }, null);
+            if (awakeInvoke != null)
             {
                 try
                 {
-                    awakeInfo.Invoke(obj, new object[] { a, b, c });
+                    awakeInvoke(obj, new object[] { a, b, c });
                 }
                 catch (Exception e)
                 {
@@ -183,7 +187,7 @@ namespace HHW.Service
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.ToString());
+                    Log.Error(e);
                 }
             }
         }
@@ -222,12 +226,13 @@ namespace HHW.Service
         public static void Destroy(Object obj)
         {
             Type type = obj.GetType();
-            MethodInfo destroyInfo = type.GetMethod("Destroy", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new Type[] { }, null);
-            if (destroyInfo != null)
+            FastInvokeHandler destoryInvoke = FastInvokeCache.GetMethod(type, "Destroy");
+            //MethodInfo destroyInfo = type.GetMethod("Destroy", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new Type[] { }, null);
+            if (destoryInvoke != null)
             {
                 try
                 {
-                    destroyInfo.Invoke(obj, null);
+                    destoryInvoke(obj, null);
                 }
                 catch (Exception e)
                 {

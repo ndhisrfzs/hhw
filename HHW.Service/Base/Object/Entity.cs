@@ -13,7 +13,8 @@ namespace HHW.Service
             this.componentDict = new Dictionary<Type, Component>();
         }
 
-        protected Entity(long id): base(id)
+        protected Entity(long id)
+            : base(id)
         {
             this.componentDict = new Dictionary<Type, Component>();
         }

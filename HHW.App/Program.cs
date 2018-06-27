@@ -1,4 +1,5 @@
 ﻿using HHW.Service;
+using NLog;
 using System;
 using System.Net;
 using System.Threading;
@@ -18,7 +19,15 @@ namespace HHW.App
             Game.Client.AddComponent<NetInnerComponent>();
             Game.Client.AddComponent<OpcodeTypeComponent>();
             var session = Game.Client.GetComponent<NetInnerComponent>().Create(NetworkHelper.ToIPEndPoint("127.0.0.1", 7777));
+
+            LogManager.Configuration.Variables["appType"] = "Server";
+            LogManager.Configuration.Variables["appId"] = "1";
+            LogManager.Configuration.Variables["appTypeFormat"] = "Server";
+            LogManager.Configuration.Variables["appIdFormat"] = "001";
+            //TestClass tc = new TestClass();
+            //int i = tc.Test();
             Test(session);
+            Log.Info("Start Over");
 
             while (true)
             {

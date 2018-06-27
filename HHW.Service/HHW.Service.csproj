@@ -6,4 +6,8 @@
     <AssemblyName>Service</AssemblyName>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="NLog" Version="4.5.6" />
+  </ItemGroup>
+
 </Project>

@@ -1,63 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading.Tasks;
 
 namespace HHW.Service
 {
     public class TClient : AClient
     {
-        private readonly TcpClient tcpClient;
+        private Socket socket;
+        private SocketAsyncEventArgs innArgs = new SocketAsyncEventArgs();
+        private SocketAsyncEventArgs outArgs = new SocketAsyncEventArgs();
 
         private readonly CircularBuffer recvBuffer = new CircularBuffer();
         private readonly CircularBuffer sendBuffer = new CircularBuffer();
 
         private bool isSending;
-        private readonly PacketParser parser;
         private bool isConnected;
-        private TaskCompletionSource<Packet> recvTcs;
 
-        public TClient(TcpClient tcpClient, TServer server) 
-            : base(server, ClientType.Accept)
-        {
-            this.tcpClient = tcpClient;
-            this.parser = new PacketParser(this.recvBuffer);
+        private readonly PacketParser parser;
 
-            IPEndPoint iPEndPoint = (IPEndPoint)this.tcpClient.Client.RemoteEndPoint;
-            this.RemoteAddress = iPEndPoint;
-            this.OnAccepted();
-        }
-        public TClient(TcpClient tcpClient, IPEndPoint iPEndPoint, TServer server)
+        public TClient(IPEndPoint ipEndPoint, TServer server) 
             : base(server, ClientType.Connect)
         {
-            this.tcpClient = tcpClient;
+            this.socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            this.socket.NoDelay = true;
             this.parser = new PacketParser(this.recvBuffer);
-            this.RemoteAddress = iPEndPoint;
+            this.innArgs.Completed += this.OnComplete;
+            this.outArgs.Completed += this.OnComplete;
 
-            this.ConnectAsync(iPEndPoint);
+            this.RemoteAddress = ipEndPoint;
+            this.isConnected = false;
+            this.isSending = false;
         }
-
-        private async void ConnectAsync(IPEndPoint ipEndPoint)
+        public TClient(Socket socket, TServer server)
+            : base(server, ClientType.Accept)
         {
-            try
-            {
-                await this.tcpClient.ConnectAsync(ipEndPoint.Address, ipEndPoint.Port);
+            this.socket = socket;
+            this.socket.NoDelay = true;
+            this.parser = new PacketParser(this.recvBuffer);
+            this.innArgs.Completed += this.OnComplete;
+            this.outArgs.Completed += this.OnComplete;
 
-                this.isConnected = true;
-                this.StartSend();
-                this.StartRecv();
-            }
-            catch(SocketException e)
-            {
-                this.OnError(e.SocketErrorCode);
-            }
-            catch(Exception)
-            {
-                this.OnError(SocketError.SocketError);
-            }
+            this.RemoteAddress = (IPEndPoint)socket.RemoteEndPoint;
+            this.isConnected = true;
+            this.isSending = false;
         }
 
         public override void Dispose()
@@ -69,36 +56,29 @@ namespace HHW.Service
 
             base.Dispose();
 
-            this.tcpClient.Close();
+            this.socket.Close();
+            this.innArgs.Dispose();
+            this.outArgs.Dispose();
+            this.innArgs = null;
+            this.outArgs = null;
+            this.socket = null;
         }
 
-        public void OnAccepted()
+        public override void Start()
         {
-            this.isConnected = true;
-            this.StartSend();
+            if(!this.isConnected)
+            {
+                this.ConnectAsync(this.RemoteAddress);
+                return;
+            }
+
             this.StartRecv();
-        }
-        public override Task<Packet> Recv()
-        {
-            if(this.IsDisposed)
-            {
-                throw new Exception("TClient已经被Dispose, 不能接收消息");
-            }
-
-            bool isOK = this.parser.Parse();
-            if(isOK)
-            {
-                Packet packet = this.parser.GetPacket();
-                return Task.FromResult(packet);
-            }
-
-            recvTcs = new TaskCompletionSource<Packet>();
-            return recvTcs.Task;
+            this.StartSend();
         }
 
         public override void Send(byte[] buffer, int index, int length)
         {
-            if(this.IsDisposed)
+            if (this.IsDisposed)
             {
                 throw new Exception("TClient已经被Dispose, 不能发送消息");
             }
@@ -106,7 +86,7 @@ namespace HHW.Service
             byte[] size = BitConverter.GetBytes((ushort)buffer.Length);
             this.sendBuffer.Write(size, 0, size.Length);
             this.sendBuffer.Write(buffer, index, length);
-            if(this.isConnected)
+            if (this.isConnected)
             {
                 this.StartSend();
             }
@@ -126,115 +106,205 @@ namespace HHW.Service
             {
                 this.sendBuffer.Write(buffer, 0, buffer.Length);
             }
-            if(this.isConnected)
+            if (this.isConnected)
             {
                 this.StartSend();
             }
         }
 
-        private async void StartSend()
+        private void ConnectAsync(IPEndPoint ipEndPoint)
         {
-            try
+            this.outArgs.RemoteEndPoint = ipEndPoint;
+            if(this.socket.ConnectAsync(this.outArgs))
             {
-                if(this.IsDisposed)
-                {
-                    return;
-                }
-
-                if(this.isSending)
-                {
-                    return;
-                }
-
-                while(true)
-                {
-                    if(this.IsDisposed)
-                    {
-                        return;
-                    }
-
-                    long bufferLength = this.sendBuffer.Length;
-                    if(bufferLength == 0)
-                    {
-                        this.isSending = false;
-                        return;
-                    }
-
-                    this.isSending = true;
-
-                    NetworkStream stream = this.tcpClient.GetStream();
-                    if(!stream.CanWrite)
-                    {
-                        return;
-                    }
-
-                    await this.sendBuffer.ReadAsync(stream);
-                }
+                return;
             }
-            catch(IOException)
+            OnConnectComplete(this.outArgs);
+        }
+
+        private void OnComplete(object sender, SocketAsyncEventArgs e)
+        {
+            switch(e.LastOperation)
             {
-                this.OnError(SocketError.SocketError);
-            }
-            catch (ObjectDisposedException)
-            {
-                this.OnError(SocketError.SocketError);
-            }
-            catch (Exception)
-            {
-                this.OnError(SocketError.SocketError);
+                case SocketAsyncOperation.Connect:
+                    OnConnectComplete(e);
+                    break;
+                case SocketAsyncOperation.Receive:
+                    OnRecvComplete(e);
+                    break;
+                case SocketAsyncOperation.Send:
+                    OnSendComplete(e);
+                    break;
+                case SocketAsyncOperation.Disconnect:
+                    break;
+                default:
+                    throw new Exception($"socket error: {e.LastOperation}");
             }
         }
 
-        private async void StartRecv()
+        private void OnConnectComplete(object o)
+        {
+            if(this.socket == null)
+            {
+                return;
+            }
+
+            SocketAsyncEventArgs e = (SocketAsyncEventArgs)o;
+            if(e.SocketError != SocketError.Success)
+            {
+                this.OnError(e.SocketError);
+                return;
+            }
+
+            e.RemoteEndPoint = null;
+            this.isConnected = true;
+
+            this.StartRecv();
+            this.StartSend();
+        }
+
+        private void OnRecvComplete(object o)
+        {
+            if(this.socket == null)
+            {
+                return;
+            }
+            SocketAsyncEventArgs e = (SocketAsyncEventArgs)o;
+            if(e.SocketError != SocketError.Success)
+            {
+                this.OnError(e.SocketError);
+                return;
+            }
+            if(e.BytesTransferred == 0)
+            {
+                this.OnError(e.SocketError);
+                return;
+            }
+
+            this.recvBuffer.LastIndex += e.BytesTransferred;
+            if(this.recvBuffer.LastIndex == this.recvBuffer.ChunkSize)
+            {
+                this.recvBuffer.AddLast();
+                this.recvBuffer.LastIndex = 0;
+            }
+
+            while(true)
+            {
+                if(!this.parser.Parse())
+                {
+                    break;
+                }
+
+                Packet pack = this.parser.GetPacket();
+                try
+                {
+                    this.OnRead(pack);
+                }
+                catch(Exception ex)
+                {
+                    Log.Error(ex);
+                }
+            }
+
+            if(this.socket == null)
+            {
+                return;
+            }
+
+            this.StartRecv();
+        }
+
+        private void StartRecv()
+        {
+            int size = this.recvBuffer.ChunkSize - this.recvBuffer.LastIndex;
+            this.RecvAsync(this.recvBuffer.Last, this.recvBuffer.LastIndex, size);
+        }
+
+        private void RecvAsync(byte[] buffer, int offset, int count)
         {
             try
             {
-                while(true)
-                {
-                    if(this.IsDisposed)
-                    {
-                        return;
-                    }
-
-                    NetworkStream stream = this.tcpClient.GetStream();
-                    if(!stream.CanRead)
-                    {
-                        return;
-                    }
-
-                    int n = await this.recvBuffer.WriteAsync(stream);
-                    if(n == 0)
-                    {
-                        this.OnError(SocketError.NetworkReset);
-                        return;
-                    }
-
-                    if(this.recvTcs != null)
-                    {
-                        bool isOK = this.parser.Parse();
-                        if(isOK)
-                        {
-                            Packet packet = this.parser.GetPacket();
-
-                            var tcs = this.recvTcs;
-                            this.recvTcs = null;
-                            tcs.SetResult(packet);
-                        }
-                    }
-                }
+                this.innArgs.SetBuffer(buffer, offset, count);
             }
-            catch (IOException)
+            catch (Exception ex)
             {
-                this.OnError(SocketError.SocketError);
+                throw new Exception($"socket set buffer error: {buffer.Length}, {offset}, {count}", ex);
             }
-            catch (ObjectDisposedException)
+
+            if (this.socket.ReceiveAsync(this.innArgs))
             {
-                this.OnError(SocketError.SocketError);
+                return;
             }
-            catch (Exception)
+
+            OnRecvComplete(this.innArgs);
+        }
+
+        private void OnSendComplete(object o)
+        {
+            if(this.socket == null)
             {
-                this.OnError(SocketError.SocketError);
+                return;
             }
+
+            SocketAsyncEventArgs e = (SocketAsyncEventArgs)o;
+            if(e.SocketError != SocketError.Success)
+            {
+                this.OnError(e.SocketError);
+                return;
+            }
+
+            this.sendBuffer.FirstIndex += e.BytesTransferred;
+            if(this.sendBuffer.FirstIndex == this.sendBuffer.ChunkSize)
+            {
+                this.sendBuffer.FirstIndex = 0;
+                this.sendBuffer.RemoveFirst();
+            }
+            if(this.sendBuffer.Length == 0)
+            {
+                this.isSending = false;
+                return;
+            }
+
+            this.StartSend();
+        }
+
+        private void StartSend()
+        {
+            if(!this.isConnected)
+            {
+                return;
+            }
+            this.isSending = true;
+            int sendSize = this.sendBuffer.ChunkSize - this.sendBuffer.FirstIndex;
+            if(sendSize > this.sendBuffer.Length)
+            {
+                sendSize = (int)this.sendBuffer.Length;
+            }
+
+            this.SendAsync(this.sendBuffer.First, this.sendBuffer.FirstIndex, sendSize);
+        }
+
+        private void SendAsync(byte[] buffer, int offset, int count)
+        {
+            try
+            {
+                this.outArgs.SetBuffer(buffer, offset, count);
+            }
+            catch(Exception ex)
+            {
+                throw new Exception($"socket set buffer error: {buffer.Length}, {offset}, {count}", ex);
+            }
+            if(this.socket.SendAsync(this.outArgs))
+            {
+                return;
+            }
+            OnSendComplete(this.outArgs);
+        }
+
+        private void OnDisconnectComplete(object o)
+        {
+            SocketAsyncEventArgs e = (SocketAsyncEventArgs)o;
+            this.OnError(e.SocketError);
         }
     }
 }

@@ -9,15 +9,19 @@ namespace HHW.Service
 {
     public sealed class TServer : AServer
     {
-        private TcpListener listener;
+        private Socket listener;
+        private readonly SocketAsyncEventArgs innArgs = new SocketAsyncEventArgs();
         private readonly Dictionary<long, AClient> idClients = new Dictionary<long, AClient>();
 
         public TServer(IPEndPoint ipEndPoint)
         {
-            this.listener = new TcpListener(ipEndPoint);
-            this.listener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-            this.listener.Server.NoDelay = true;
-            this.listener.Start();
+            this.listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            this.listener.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            this.listener.NoDelay = true;
+            this.innArgs.Completed += this.OnAcceptComplete;
+
+            this.listener.Bind(ipEndPoint);
+            this.listener.Listen(1000);
         }
 
         public TServer()
@@ -27,19 +31,71 @@ namespace HHW.Service
 
         public override void Dispose()
         {
-            if(this.listener == null)
+            if (this.listener == null)
             {
                 return;
             }
+
+            base.Dispose();
+
             foreach (long id in this.idClients.Keys.ToArray())
             {
                 AClient client = this.idClients[id];
                 client.Dispose();
             }
-            this.listener.Stop();
+            this.listener?.Close();
+            this.innArgs.Dispose();
             this.listener = null;
+        }
 
-            base.Dispose();
+        public override void Start()
+        {
+            if(this.listener != null)
+            {
+                this.AcceptAsync();
+            }
+        }
+
+        private void OnAcceptComplete(object sender, SocketAsyncEventArgs o)
+        {
+            if(this.listener == null)
+            {
+                return;
+            }
+
+            SocketAsyncEventArgs e = o;
+            if(e.SocketError != SocketError.Success)
+            {
+                return;
+            }
+
+            TClient client = new TClient(e.AcceptSocket, this);
+            this.idClients[client.id] = client;
+            try
+            {
+                this.OnAccept(client);
+            }
+            catch(Exception ex)
+            {
+                Log.Error(ex);
+            }
+
+            if(this.listener == null)
+            {
+                return;
+            }
+
+            this.AcceptAsync();
+        }
+
+        private void AcceptAsync()
+        {
+            this.innArgs.AcceptSocket = null;
+            if (this.listener.AcceptAsync(this.innArgs))
+            {
+                return;
+            }
+            OnAcceptComplete(this, this.innArgs);
         }
 
         public override AClient GetClient(long id)
@@ -49,23 +105,9 @@ namespace HHW.Service
             return client;
         }
 
-        public override async Task<AClient> AcceptClient()
-        {
-            if(this.listener == null)
-            {
-                throw new Exception("server construct must use host and port param");
-            }
-
-            TcpClient tcpClient = await this.listener.AcceptTcpClientAsync();
-            AClient client = new TClient(tcpClient, this);
-            this.idClients[client.id] = client;
-            return client;
-        }
-
         public override AClient ConnectClient(IPEndPoint ipEndPoint)
         {
-            TcpClient tcpClient = new TcpClient();
-            AClient client = new TClient(tcpClient, ipEndPoint, this);
+            TClient client = new TClient(ipEndPoint, this);
             this.idClients[client.id] = client;
             return client;
         }

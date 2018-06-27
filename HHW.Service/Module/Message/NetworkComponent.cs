@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 
 namespace HHW.Service
 {
@@ -18,35 +17,24 @@ namespace HHW.Service
         public void Awake()
         {
             this.Server = new TServer();
+            this.Server.AcceptCallback += this.OnAccept;
         }
 
         public void Awake(IPEndPoint ipEndPoint)
         {
             this.Server = new TServer(ipEndPoint);
-
-            this.StartAccept();
+            this.Server.AcceptCallback += this.OnAccept;
         }
 
-        private async void StartAccept()
+        public void Start()
         {
-            while(true)
-            {
-                if(this.IsDisposed)
-                {
-                    return;
-                }
-
-                await this.Accept();
-            }
+            this.Server.Start();
         }
 
-        public virtual async Task<Session> Accept()
+        public void OnAccept(AClient client)
         {
-            AClient client = await this.Server.AcceptClient();
-            Session session = ObjectFactory.Create<Session, NetworkComponent, AClient>(this, client);
-            client.ErrorCallback += (c, e) => { this.Remove(session.id); };
+            Session session = ObjectFactory.CreateWithParent<Session, AClient>(this, client);
             this.sessions.Add(session.id, session);
-            return session;
         }
 
         public virtual void Remove(long id)
@@ -72,7 +60,7 @@ namespace HHW.Service
             try
             {
                 AClient client = this.Server.ConnectClient(ipEndPoint);
-                Session session = ObjectFactory.Create<Session, NetworkComponent, AClient>(this, client);
+                Session session = ObjectFactory.CreateWithParent<Session, AClient>(this, client);
                 client.ErrorCallback += (c, e) => { this.Remove(session.id); };
                 this.sessions.Add(session.id, session);
                 return session;
