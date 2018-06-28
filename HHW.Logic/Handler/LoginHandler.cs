@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 namespace HHW.Logic
 {
     [MessageHandler(AppType.Login)]
-    public class C2S_LoginHandler : AMRpcHandler<C2S_Login, S2C_Login>
+    public class LoginHandler : AMRpcHandler<Login.Request, Login.Response>
     {
-        protected override Task<S2C_Login> Run(Session session, C2S_Login message)//, Action<S2C_Login> reply)
+        protected override Task<Login.Response> Run(Session session, Login.Request message)
         {
-            S2C_Login response = new S2C_Login();
+            Login.Response response = new Login.Response();
             Console.WriteLine("C2S_LoginHandler " + message.Account);
             response.IsLogin = true;
             //reply(response);

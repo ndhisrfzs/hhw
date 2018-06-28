@@ -51,7 +51,7 @@ namespace HHW.Service
 
             foreach (Action<IResponse> action in this.requestCallback.Values.ToArray())
             {
-                action.Invoke(new Response { Error = ErrorCode.ERR_SocketDisconnected });
+                action.Invoke(new MessageResponse { Error = ErrorCode.ERR_SocketDisconnected });
             }
 
             this.client.Dispose();

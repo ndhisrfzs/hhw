@@ -1,4 +1,5 @@
-﻿using HHW.Service;
+﻿using HHW.Logic;
+using HHW.Service;
 using NLog;
 using System;
 using System.Net;
@@ -27,6 +28,7 @@ namespace HHW.App
             //TestClass tc = new TestClass();
             //int i = tc.Test();
             Test(session);
+            Ping(session);
             Log.Info("Start Over");
 
             while (true)
@@ -51,12 +53,21 @@ namespace HHW.App
 
         static async void Test(Session session)
         {
-            var result = (S2C_Login)await session.Call(new C2S_Login()
+            var result = (Login.Response)await session.Call(new Login.Request()
             {
                 Account = "fzf",
                 Password = "123456"
             });
             Console.WriteLine(result.IsLogin);
+        }
+
+        static async void Ping(Session session)
+        {
+            while(true)
+            {
+                await Task.Delay(1000);
+                session.Send(new Ping() { });
+            }
         }
     }
 }

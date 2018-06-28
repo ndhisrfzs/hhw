@@ -15,12 +15,12 @@
         string Message { get; set; }
     }
 
-    public class Request : IRequest
+    public class MessageRequest : IRequest
     {
         public uint RpcId { get; set; }
     }
 
-    public class Response : IResponse
+    public class MessageResponse : IResponse
     {
         public uint RpcId { get; set; }
         public short Error { get; set; }

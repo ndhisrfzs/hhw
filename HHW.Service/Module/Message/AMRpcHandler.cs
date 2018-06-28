@@ -3,15 +3,10 @@ using System.Threading.Tasks;
 
 namespace HHW.Service
 {
+   
     public abstract class AMRpcHandler<Request, Response> : IMHandler where Request : class, IRequest where Response : class, IResponse
     {
-        protected static void ReplyError(Response response, Exception e, Action<Response> reply)
-        {
-            response.Error = ErrorCode.ERR_RpcFail;
-            response.Message = e.ToString();
-            reply(response);
-        }
-        protected abstract Task<Response> Run(Session session, Request message);//, Action<Response> reply);
+        protected abstract Task<Response> Run(Session session, Request message);
 
         public async void Handle(Session session, object message)
         {
@@ -24,20 +19,18 @@ namespace HHW.Service
                 }
 
                 uint rpcId = request.RpcId;
+                long sessionid = session.id;
                 var response = await this.Run(session, request);
-                //response =>
-                //{
-                if (session.IsDisposed)
+                if (session.id != sessionid)
                 {
                     return;
                 }
                 response.RpcId = rpcId;
                 session.Reply(response);
-                //}
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.ToString());
+                Log.Error(e);
             }
         }
         public Type GetMessageType()

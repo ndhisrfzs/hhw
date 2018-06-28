@@ -1,15 +1,24 @@
 ﻿namespace HHW.Service
 {
-    [Message(MessageOpcode.C2S_Login)]
-    public class C2S_Login : Request
+
+    public class Login
     {
-        public string Account { get; set; }
-        public string Password { get; set; }
+        [Message(MessageOpcode.C2S_Login)]
+        public class Request : MessageRequest
+        {
+            public string Account { get; set; }
+            public string Password { get; set; }
+        }
+        [Message(MessageOpcode.S2C_Login)]
+        public class Response : MessageResponse
+        {
+            public bool IsLogin { get; set; }
+        }
     }
 
-    [Message(MessageOpcode.S2C_Login)]
-    public class S2C_Login : Response
+    [Message(MessageOpcode.Ping)]
+    public class Ping: MessageRequest
     {
-        public bool IsLogin { get; set; }
+
     }
 }

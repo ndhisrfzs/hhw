@@ -86,7 +86,7 @@ namespace HHW.Service
             byte[] size = BitConverter.GetBytes((ushort)buffer.Length);
             this.sendBuffer.Write(size, 0, size.Length);
             this.sendBuffer.Write(buffer, index, length);
-            if (this.isConnected)
+            if (!this.isSending)
             {
                 this.StartSend();
             }
@@ -106,7 +106,7 @@ namespace HHW.Service
             {
                 this.sendBuffer.Write(buffer, 0, buffer.Length);
             }
-            if (this.isConnected)
+            if (!this.isSending)
             {
                 this.StartSend();
             }
