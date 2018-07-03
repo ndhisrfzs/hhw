@@ -115,7 +115,7 @@ namespace HHW.Service
         public override void Remove(long id)
         {
             AClient client;
-            if(!this.idClients.Remove(id, out client))
+            if(!this.idClients.TryGetValue(id, out client))
             {
                 return;
             }
@@ -123,6 +123,7 @@ namespace HHW.Service
             {
                 return;
             }
+            this.idClients.Remove(id);
             client.Dispose();
         }
 

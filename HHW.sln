@@ -9,6 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HHW.Service", "HHW.Service\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HHW.Logic", "HHW.Logic\HHW.Logic.csproj", "{249EC4E8-F44B-4727-BE65-F244F6B36D06}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HHW.Client", "HHW.Client\HHW.Client.csproj", "{B2E2279D-746D-4D37-B955-96CB312F8C71}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8B54BF62-00C9-4D43-9FA2-A7364CD167E8} = {8B54BF62-00C9-4D43-9FA2-A7364CD167E8}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +60,18 @@ Global
 		{249EC4E8-F44B-4727-BE65-F244F6B36D06}.Release|x64.Build.0 = Release|x64
 		{249EC4E8-F44B-4727-BE65-F244F6B36D06}.Release|x86.ActiveCfg = Release|x86
 		{249EC4E8-F44B-4727-BE65-F244F6B36D06}.Release|x86.Build.0 = Release|x86
+		{B2E2279D-746D-4D37-B955-96CB312F8C71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2E2279D-746D-4D37-B955-96CB312F8C71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2E2279D-746D-4D37-B955-96CB312F8C71}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B2E2279D-746D-4D37-B955-96CB312F8C71}.Debug|x64.Build.0 = Debug|Any CPU
+		{B2E2279D-746D-4D37-B955-96CB312F8C71}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B2E2279D-746D-4D37-B955-96CB312F8C71}.Debug|x86.Build.0 = Debug|Any CPU
+		{B2E2279D-746D-4D37-B955-96CB312F8C71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2E2279D-746D-4D37-B955-96CB312F8C71}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2E2279D-746D-4D37-B955-96CB312F8C71}.Release|x64.ActiveCfg = Release|Any CPU
+		{B2E2279D-746D-4D37-B955-96CB312F8C71}.Release|x64.Build.0 = Release|Any CPU
+		{B2E2279D-746D-4D37-B955-96CB312F8C71}.Release|x86.ActiveCfg = Release|Any CPU
+		{B2E2279D-746D-4D37-B955-96CB312F8C71}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 
 namespace HHW.Service
 {
@@ -7,7 +8,7 @@ namespace HHW.Service
         private readonly DoubleMap<ushort, Type> opcodeTypes = new DoubleMap<ushort, Type>();
         void Awake()
         {
-            Type[] types = DllHelper.GetMonoTypes(typeof(Game).Assembly, DllHelper.GetLogicAssembly());
+            var types = EventSystem.GetTypes();// DllHelper.GetMonoTypes(typeof(Game).Assembly, DllHelper.GetLogicAssembly());
             foreach (var type in types)
             {
                 object[] attrs = type.GetCustomAttributes(typeof(MessageAttribute), false);

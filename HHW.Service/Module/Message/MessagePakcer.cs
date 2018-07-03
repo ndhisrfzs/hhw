@@ -6,22 +6,26 @@ namespace HHW.Service
     {
         public object DeserializeFrom(Type type, byte[] bytes)
         {
-            return Serialization.DeserializeFrom(type, bytes, 0, out int readLength);
+            int readLength = 0;
+            return Serialization.DeserializeFrom(type, bytes, 0, out readLength);
         }
 
         public object DeserializeFrom(Type type, byte[] bytes, int index, int count)
         {
-            return Serialization.DeserializeFrom(type, bytes, index, count, out int readLength);
+            int readLength = 0;
+            return Serialization.DeserializeFrom(type, bytes, index, count, out readLength);
         }
 
         public T DeserializeFrom<T>(byte[] bytes)
         {
-            return Serialization.DeserializeFrom<T>(bytes, 0, out int readLength);
+            int readLength = 0;
+            return Serialization.DeserializeFrom<T>(bytes, 0, out readLength);
         }
 
         public T DeserializeFrom<T>(byte[] bytes, int index, int count)
         {
-            return Serialization.DeserializeFrom<T>(bytes, index, count, out int readLength);
+            int readLength = 0;
+            return Serialization.DeserializeFrom<T>(bytes, index, count, out readLength);
         }
 
         public T DeserializeFrom<T>(string str)

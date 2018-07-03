@@ -138,14 +138,14 @@ namespace HHW.Service
                 {
                     if (response.Error > ErrorCode.ERR_Exception)
                     {
-                        throw new Exception(response.Message);
+                        throw new RpcException(response.Error, response.Message);
                     }
 
                     tcs.SetResult(response);
                 }
                 catch (Exception e)
                 {
-                    tcs.SetException(e);
+                    tcs.SetException(new Exception($"RPC Error:{request.GetType().FullName}", e));
                 }
             };
 

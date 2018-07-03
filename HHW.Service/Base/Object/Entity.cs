@@ -111,9 +111,12 @@ namespace HHW.Service
         public void RemoveComponent(Type type)
         {
             Component component;
-            if(this.componentDict.Remove(type, out component))
+            if (this.componentDict.TryGetValue(type, out component))
             {
-                component.Dispose();
+                if (this.componentDict.Remove(type))
+                {
+                    component.Dispose();
+                }
             }
         }
 

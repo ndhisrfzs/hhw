@@ -1,6 +1,7 @@
-﻿namespace HHW.Service
-{
+﻿using HHW.Service;
 
+namespace HHW.Service
+{
     public class Login
     {
         [Message(MessageOpcode.C2S_Login)]

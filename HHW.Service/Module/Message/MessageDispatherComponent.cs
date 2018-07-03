@@ -13,7 +13,7 @@ namespace HHW.Service
             this.AppType = appType;
             this.handlers.Clear();
 
-            Type[] types = DllHelper.GetMonoTypes(DllHelper.GetLogicAssembly());
+            var types = EventSystem.GetTypes();// DllHelper.GetMonoTypes(DllHelper.GetLogicAssembly());
             foreach (Type type in types)
             {
                 object[] attrs = type.GetCustomAttributes(typeof(MessageHandlerAttribute), false);

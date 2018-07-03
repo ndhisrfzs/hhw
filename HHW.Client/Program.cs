@@ -1,32 +1,22 @@
 ﻿using HHW.Service;
-using NLog;
 using System;
-using System.Net;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HHW.App
+namespace HHW.Client
 {
     class Program
     {
         static void Main(string[] args)
         {
             EventSystem.Add(DLLType.Model, typeof(Game).Assembly);
-            EventSystem.Add(DLLType.Logic, DllHelper.GetLogicAssembly());
+            EventSystem.Add(DLLType.Logic, typeof(MessageOpcode).Assembly);
 
             Game.Scene.AddComponent<OpcodeTypeComponent>();
-            Game.Scene.AddComponent<MessageDispatherComponent, AppType>(AppType.AllServer);
-            Game.Scene.AddComponent<NetInnerComponent, IPEndPoint>(new IPEndPoint(IPAddress.Any, 7777));
-            Game.Scene.AddComponent<NetOuterComponent, IPEndPoint>(new IPEndPoint(IPAddress.Any, 6666));
+            Game.Scene.AddComponent<NetOuterComponent>();
 
-            LogManager.Configuration.Variables["appType"] = "Server";
-            LogManager.Configuration.Variables["appId"] = "1";
-            LogManager.Configuration.Variables["appTypeFormat"] = "Server";
-            LogManager.Configuration.Variables["appIdFormat"] = "001";
-            //Test(session);
-            //Ping(session);
-            Log.Info("Start Over");
+            var session = Game.Scene.GetComponent<NetOuterComponent>().Create(NetworkHelper.ToIPEndPoint("127.0.0.1", 7777));
+            Test(session);
 
             while (true)
             {
@@ -42,12 +32,6 @@ namespace HHW.App
             }
         }
 
-        //static void TT(Session session)
-        //{
-        //    var b = Test(session);
-        //    Console.WriteLine(b.Result);
-        //}
-
         static async void Test(Session session)
         {
             var result = (Login.Response)await session.Call(new Login.Request()
@@ -56,11 +40,12 @@ namespace HHW.App
                 Password = "123456"
             });
             Console.WriteLine(result.IsLogin);
+            Ping(session);
         }
 
         static async void Ping(Session session)
         {
-            while(true)
+           while(true)
             {
                 await Task.Delay(1000);
                 session.Send(new Ping() { });

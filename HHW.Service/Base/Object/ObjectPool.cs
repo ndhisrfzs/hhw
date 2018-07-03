@@ -11,7 +11,8 @@ namespace HHW.Service
             where T : Object
         {
             Type type = typeof(T);
-            if(!dictionary.TryGetValue(type, out Queue<Object> queue))
+            Queue<Object> queue = null;
+            if(!dictionary.TryGetValue(type, out queue))
             {
                 queue = new Queue<Object>();
                 dictionary.Add(type, queue);
@@ -37,7 +38,8 @@ namespace HHW.Service
         public static void Recycle(Object obj)
         {
             Type type = obj.GetType();
-            if(!dictionary.TryGetValue(type, out Queue<Object> queue))
+            Queue<Object> queue = null;
+            if(!dictionary.TryGetValue(type, out queue))
             {
                 queue = new Queue<Object>();
                 dictionary.Add(type, queue);

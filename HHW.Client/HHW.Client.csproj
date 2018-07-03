@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HHW.Logic\HHW.Logic.csproj" />
+    <ProjectReference Include="..\HHW.Service\HHW.Service.csproj" />
+  </ItemGroup>
+
+</Project>

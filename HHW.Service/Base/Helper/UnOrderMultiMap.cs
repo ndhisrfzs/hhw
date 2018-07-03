@@ -20,7 +20,8 @@ namespace HHW.Service
 
         public bool Remove(T t, K k)
         {
-            if(!this.dictionary.TryGetValue(t, out List<K> list))
+            List<K> list = null; 
+            if(!this.dictionary.TryGetValue(t, out list))
             {
                 return false;
             }
@@ -37,7 +38,8 @@ namespace HHW.Service
 
         public bool Remove(T t)
         {
-            if(!this.dictionary.TryGetValue(t, out List<K> list))
+            List<K> list = null;
+            if(!this.dictionary.TryGetValue(t, out list))
             {
                 return this.dictionary.Remove(t);
             }
@@ -48,7 +50,8 @@ namespace HHW.Service
         {
             get
             {
-                if (this.dictionary.TryGetValue(t, out List<K> list))
+                List<K> list = null;
+                if (this.dictionary.TryGetValue(t, out list))
                 {
                     return list;
                 }

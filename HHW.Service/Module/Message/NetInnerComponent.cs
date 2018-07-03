@@ -28,7 +28,8 @@ namespace HHW.Service
 
         public Session Get(IPEndPoint ipEndPoint)
         {
-            if(this.addressSessions.TryGetValue(ipEndPoint, out Session session))
+            Session session = null;
+            if(this.addressSessions.TryGetValue(ipEndPoint, out session))
             {
                 return session;
             }

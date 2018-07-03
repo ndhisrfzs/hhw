@@ -136,6 +136,7 @@ namespace HHW.Service
                     OnSendComplete(e);
                     break;
                 case SocketAsyncOperation.Disconnect:
+                    OnDisconnectComplete(e);
                     break;
                 default:
                     throw new Exception($"socket error: {e.LastOperation}");

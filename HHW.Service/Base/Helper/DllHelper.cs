@@ -9,8 +9,12 @@ namespace HHW.Service
     {
         public static Assembly GetLogicAssembly()
         {
-            byte[] dllBytes = File.ReadAllBytes("Logic.dll");
-            byte[] pdbBytes = File.ReadAllBytes("Logic.pdb");
+            byte[] dllBytes = File.ReadAllBytes("./Logic.dll");
+#if __MonoCS__
+			byte[] pdbBytes = File.ReadAllBytes("./Logic.dll.mdb");
+#else
+            byte[] pdbBytes = File.ReadAllBytes("./Logic.pdb");
+#endif
             Assembly assembly = Assembly.Load(dllBytes, pdbBytes);
             return assembly;
         }

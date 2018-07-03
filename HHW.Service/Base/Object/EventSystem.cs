@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using static HHW.Service.FastInvoke;
 
@@ -8,8 +9,7 @@ namespace HHW.Service
     public enum DLLType
     {
         Model,
-        Hotfix,
-        Editor,
+        Logic,
     }
     public struct InvokeInfo
     {
@@ -25,7 +25,8 @@ namespace HHW.Service
     public static class EventSystem
     {
         private static readonly Dictionary<long, Object> allComponents = new Dictionary<long, Object>();
-        //private static readonly Dictionary<DLLType, Assembly> assemblies = new Dictionary<DLLType, Assembly>();
+        private static readonly Dictionary<DLLType, Assembly> assemblies = new Dictionary<DLLType, Assembly>();
+        private static readonly List<Type> types = new List<Type>();
 
         private static readonly Queue<InvokeInfo> starts = new Queue<InvokeInfo>();
 
@@ -35,16 +36,31 @@ namespace HHW.Service
         private static Queue<InvokeInfo> updates = new Queue<InvokeInfo>();
         private static Queue<InvokeInfo> tempUpdates = new Queue<InvokeInfo>();
 
-        //public static Assembly[] GetAll()
-        //{
-        //    return assemblies.Values.ToArray();
-        //}
+        public static Assembly[] GetAll()
+        {
+            return assemblies.Values.ToArray();
+        }
 
-        //public static void Add(DLLType dllType, Assembly assembly)
-        //{
-        //    assemblies[dllType] = assembly;
-        //    Load();
-        //}
+        public static void Add(DLLType dllType, Assembly assembly)
+        {
+            types.Clear();
+            assemblies[dllType] = assembly;
+            foreach (Assembly value in assemblies.Values)
+            {
+                types.AddRange(value.GetTypes());
+            }
+            //Load();
+        }
+
+        public static Assembly Get(DLLType dllType)
+        {
+            return assemblies[dllType];
+        }
+
+        public static List<Type> GetTypes()
+        {
+            return types;
+        }
 
         public static void Add(Object obj)
         {
@@ -52,17 +68,17 @@ namespace HHW.Service
 
             Type type = obj.GetType();
 
-            FastInvokeHandler loadInvoke = FastInvokeCache.GetMethod(type, "Load"); //type.GetMethod("Load", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new Type[] { }, null);
+            FastInvokeHandler loadInvoke = FastInvokeCache.GetMethod(type, "Load"); 
             if (loadInvoke != null)
             {
                 loaders.Enqueue(new InvokeInfo(obj.id, loadInvoke));
             }
-            FastInvokeHandler startInvoke = FastInvokeCache.GetMethod(type, "Start"); //type.GetMethod("Start", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new Type[] { }, null);
+            FastInvokeHandler startInvoke = FastInvokeCache.GetMethod(type, "Start"); 
             if (startInvoke != null)
             {
                 starts.Enqueue(new InvokeInfo(obj.id, startInvoke));
             }
-            FastInvokeHandler updateInvoke = FastInvokeCache.GetMethod(type, "Update"); //type.GetMethod("Update", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new Type[] { }, null);
+            FastInvokeHandler updateInvoke = FastInvokeCache.GetMethod(type, "Update");
             if(updateInvoke != null)
             {
                 updates.Enqueue(new InvokeInfo(obj.id, updateInvoke));
@@ -102,7 +118,6 @@ namespace HHW.Service
         {
             Type type = obj.GetType();
             FastInvokeHandler awakeInvoke = FastInvokeCache.GetMethod(type, "Awake");
-            //MethodInfo awakeInfo = type.GetMethod("Awake", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new Type[] { }, null);
             if (awakeInvoke != null)
             {
                 try
@@ -120,7 +135,6 @@ namespace HHW.Service
         {
             Type type = obj.GetType();
             FastInvokeHandler awakeInvoke = FastInvokeCache.GetMethod(type, "Awake", typeof(A));
-            //MethodInfo awakeInfo = type.GetMethod("Awake", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new Type[] { typeof(A) }, null);
             if (awakeInvoke != null)
             {
                 try
@@ -138,7 +152,6 @@ namespace HHW.Service
         {
             Type type = obj.GetType();
             FastInvokeHandler awakeInvoke = FastInvokeCache.GetMethod(type, "Awake", typeof(A), typeof(B));
-            //MethodInfo awakeInfo = type.GetMethod("Awake", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new Type[] { typeof(A), typeof(B) }, null);
             if (awakeInvoke != null)
             {
                 try
@@ -156,7 +169,6 @@ namespace HHW.Service
         {
             Type type = obj.GetType();
             FastInvokeHandler awakeInvoke = FastInvokeCache.GetMethod(type, "Awake", typeof(A), typeof(B), typeof(C));
-            //MethodInfo awakeInfo = type.GetMethod("Awake", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new Type[] { typeof(A), typeof(B), typeof(C) }, null);
             if (awakeInvoke != null)
             {
                 try
@@ -227,7 +239,6 @@ namespace HHW.Service
         {
             Type type = obj.GetType();
             FastInvokeHandler destoryInvoke = FastInvokeCache.GetMethod(type, "Destroy");
-            //MethodInfo destroyInfo = type.GetMethod("Destroy", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new Type[] { }, null);
             if (destoryInvoke != null)
             {
                 try

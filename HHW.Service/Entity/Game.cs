@@ -14,18 +14,5 @@
                 return scene;
             }
         }
-
-        private static Client client;
-        public static Client Client
-        {
-            get
-            {
-                if(client == null)
-                {
-                    client = new Client();
-                }
-                return client;
-            }
-        }
     }
 }
