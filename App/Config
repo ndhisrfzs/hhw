@@ -1,0 +1,6 @@
+AppId = 1
+AppType = AllServer
+MasterAddress = 127.0.0.1:8888
+InnerAddress = 127.0.0.1:8888
+OuterAddress = 127.0.0.1:7777
+DbAddress = 127.0.0.1:8888
