@@ -8,8 +8,6 @@ namespace GN
         public string IP { get; set; }
         public int Port { get; set; }
 
-        public IPEndPoint IpEndPoint { get; set; }
-
         public Address() { }
 
         public Address(string address)
@@ -19,12 +17,15 @@ namespace GN
                 var ss = address.Split(':');
                 this.IP = ss[0];
                 this.Port = int.Parse(ss[1]);
-                this.IpEndPoint = NetworkHelper.ToIPEndPoint(this.IP, this.Port);
             }
             catch(Exception e)
             {
                 throw e;
             }
+        }
+        public IPEndPoint IpEndPoint()
+        {
+            return NetworkHelper.ToIPEndPoint(this.IP, this.Port);
         }
     }
 }

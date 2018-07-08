@@ -3,27 +3,27 @@
 namespace GN
 {
     [MessageHandler(AppType.Master)]
-    public class RegisterAppHandler : AMRpcHandler<AppInfo, RegisterAppResponse>
+    public class RegisterAppHandler : AMRpcHandler<RegisterApp.Request, RegisterApp.Response>
     {
-        protected override Task<RegisterAppResponse> Run(Session session, AppInfo message)
+        protected override Task<RegisterApp.Response> Run(Session session, RegisterApp.Request message)
         {
-            var resp = new RegisterAppResponse();
+            var resp = new RegisterApp.Response();
             var master = Game.Scene.GetComponent<MasterComponent>();
-            resp.IsSuccess = master.Add(message);
+            resp.IsSuccess = master.Add(message.appInfo);
             if(resp.IsSuccess)
             {
-                session.AddComponent<SlaveLifeComponent, int>(message.AppId);
+                session.AddComponent<SlaveLifeComponent, int>(message.appInfo.AppId);
             }
             return Task.FromResult(resp);
         }
     }
 
     [MessageHandler(AppType.Master)]
-    public class GetAppByIdHandlder : AMRpcHandler<GetAppById, ResponseAppInfo>
+    public class GetAppByIdHandlder : AMRpcHandler<GetAppById.Request, GetAppById.Response>
     {
-        protected override Task<ResponseAppInfo> Run(Session session, GetAppById message)
+        protected override Task<GetAppById.Response> Run(Session session, GetAppById.Request message)
         {
-            var resp = new ResponseAppInfo();
+            var resp = new GetAppById.Response();
             var manager = Game.Scene.GetComponent<MasterComponent>();
             resp.appInfo = manager.Get(message.appId);
             return Task.FromResult(resp);
@@ -31,11 +31,11 @@ namespace GN
     }
 
     [MessageHandler(AppType.Master)]
-    public class GetAppByTypeHandlder : AMRpcHandler<GetAppByType, ResponseAppInfo>
+    public class GetAppByTypeHandlder : AMRpcHandler<GetAppByType.Request, GetAppByType.Response>
     {
-        protected override Task<ResponseAppInfo> Run(Session session, GetAppByType message)
+        protected override Task<GetAppByType.Response> Run(Session session, GetAppByType.Request message)
         {
-            var resp = new ResponseAppInfo();
+            var resp = new GetAppByType.Response();
             var manager = Game.Scene.GetComponent<MasterComponent>();
             resp.appInfo = manager.Get(message.appType);
             return Task.FromResult(resp);

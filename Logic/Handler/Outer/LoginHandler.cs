@@ -13,7 +13,7 @@ namespace Logic
             Console.WriteLine("C2S_LoginHandler " + message.Account);
             var slave = Game.Scene.GetComponent<SlaveComponent>();
             var gateAddress = await slave.Get(AppType.Gate);
-            var gateSession = Game.Scene.GetComponent<NetInnerComponent>().Get(gateAddress.InnerAddress.IpEndPoint);
+            var gateSession = Game.Scene.GetComponent<NetInnerComponent>().Get(gateAddress.InnerAddress.IpEndPoint());
             var result = (GetLoginKey.Response)await gateSession.Call(new GetLoginKey.Request() { account = message.Account });
             response.IsLogin = true;
             response.Key = result.key;

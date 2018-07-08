@@ -9,13 +9,13 @@ namespace GN
         public void Awake()
         {
             var config = Game.Scene.GetComponent<ConfigComponent>();
-            dbAddress = config.DbAddress.IpEndPoint;
+            dbAddress = config.DbAddress.IpEndPoint();
         }
 
         public async Task<T> QueryFirstOrDefault<T>(string filter)
         {
             Session session = Game.Scene.GetComponent<NetInnerComponent>().Get(dbAddress);
-            return (T)await session.Call(new DBQuery.Request() { CollectionName = typeof(T).Name, Filter = filter });
+            return (T)await session.Call(new DBQueryFirst.Request() { CollectionName = typeof(T).Name, Filter = filter });
         }
     }
 }

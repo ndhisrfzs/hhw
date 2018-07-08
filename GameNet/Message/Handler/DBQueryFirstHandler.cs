@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 
 namespace GN
 {
-    public class DBQueryFirstHandler : AMRpcHandler<DB.QueryFirst, DB.QueryResponse>
+    public class DBQueryFirstHandler : AMRpcHandler<DBQueryFirst.Request, DBQueryFirst.Response>
     {
-        protected override Task<DB.QueryResponse> Run(Session session, DB.QueryFirst message)
+        protected override Task<DBQueryFirst.Response> Run(Session session, DBQueryFirst.Request message)
         {
             throw new NotImplementedException();
         }

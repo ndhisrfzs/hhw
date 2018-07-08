@@ -8,18 +8,18 @@ namespace GN
         {
             var config = Game.Scene.GetComponent<ConfigComponent>();
             var info = new AppInfo() { AppId = config.AppId, AppType = config.AppType, InnerAddress = config.InnerAddress, OuterAdderss = config.OuterAddress };
-            if (config.AppType.Is(AppType.Master))
+            //if (config.AppType.Is(AppType.Master))
+            //{
+            //    var master = Game.Scene.GetComponent<MasterComponent>();
+            //    if(!master.Add(info))
+            //    {
+            //        Log.Error("Register Appinfo Error");
+            //    }
+            //}
+            //else
             {
-                var master = Game.Scene.GetComponent<MasterComponent>();
-                if(!master.Add(info))
-                {
-                    Log.Error("Register Appinfo Error");
-                }
-            }
-            else
-            {
-                var session = Game.Scene.GetComponent<NetInnerComponent>().Get(config.MasterAddress.IpEndPoint);
-                var result = (RegisterAppResponse)await session.Call(info);
+                var session = Game.Scene.GetComponent<NetInnerComponent>().Get(config.MasterAddress.IpEndPoint());
+                var result = (RegisterApp.Response)await session.Call(new RegisterApp.Request(){ appInfo = info });
                 if (!result.IsSuccess)
                 {
                     Log.Error("Register Appinfo Error");
@@ -37,8 +37,8 @@ namespace GN
             }
             else
             {
-                var session = Game.Scene.GetComponent<NetInnerComponent>().Get(config.MasterAddress.IpEndPoint);
-                var result = (ResponseAppInfo)await session.Call(new GetAppByType() { appType = appType });
+                var session = Game.Scene.GetComponent<NetInnerComponent>().Get(config.MasterAddress.IpEndPoint());
+                var result = (GetAppByType.Response)await session.Call(new GetAppByType.Request() { appType = appType });
                 return result.appInfo;
             }
         }
@@ -53,8 +53,8 @@ namespace GN
             }
             else
             {
-                var session = Game.Scene.GetComponent<NetInnerComponent>().Get(config.MasterAddress.IpEndPoint);
-                var result = (ResponseAppInfo)await session.Call(new GetAppById() { appId = appId });
+                var session = Game.Scene.GetComponent<NetInnerComponent>().Get(config.MasterAddress.IpEndPoint());
+                var result = (GetAppById.Response)await session.Call(new GetAppById.Request() { appId = appId });
                 return result.appInfo;
             }
         }

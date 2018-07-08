@@ -7,7 +7,7 @@ namespace GN
         public void Dispatch(Session session, Packet packet)
         {
             ushort opcode = packet.Opcode;
-            Type messageType = Game.Scene.GetComponent<OpcodeTypeComponent>().GetType(opcode);
+            Type messageType = Game.Scene.GetComponent<OpcodeTypeComponent>().GetRequestType(opcode);
             object message = session.Network.MessagePacker.DeserializeFrom(messageType, packet.Bytes, Packet.Index, packet.Length);
 
             //if(message is IActorMessage iActorMessage)

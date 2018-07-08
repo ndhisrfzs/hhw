@@ -15,7 +15,6 @@ namespace GN
                     return;
                 }
 
-                uint rpcId = request.RpcId;
                 this.Run(session, request);
             }
             catch (Exception e)

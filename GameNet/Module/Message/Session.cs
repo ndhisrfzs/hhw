@@ -107,7 +107,7 @@ namespace GN
 
             //flag为1表示rpc返回消息
             OpcodeTypeComponent opcodeTypeComponent = (this.Network.Parent as Entity).GetComponent<OpcodeTypeComponent>();
-            Type responseType = opcodeTypeComponent.GetType(opcode);
+            Type responseType = opcodeTypeComponent.GetResponseType(opcode);
             object message = this.Network.MessagePacker.DeserializeFrom(responseType, packet.Bytes, Packet.Index, packet.Length);
 
             IResponse response = message as IResponse;
