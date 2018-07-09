@@ -7,6 +7,7 @@ namespace GN
         public void Dispatch(Session session, Packet packet)
         {
             ushort opcode = packet.Opcode;
+            uint rpcId = packet.RpcId;
             Type messageType = Game.Scene.GetComponent<OpcodeTypeComponent>().GetRequestType(opcode);
             object message = session.Network.MessagePacker.DeserializeFrom(messageType, packet.Bytes, Packet.Index, packet.Length);
 
@@ -19,7 +20,7 @@ namespace GN
             //    }
             //}
 
-            Game.Scene.GetComponent<MessageDispatherComponent>().Handle(session, new MessageInfo(opcode, message));
+            Game.Scene.GetComponent<MessageDispatherComponent>().Handle(session, new MessageInfo(opcode, rpcId, message));
         }
     }
 }

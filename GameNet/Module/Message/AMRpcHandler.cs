@@ -8,7 +8,7 @@ namespace GN
     {
         protected abstract Task<Response> Run(Session session, Request message);
 
-        public async void Handle(Session session, object message)
+        public async void Handle(Session session, uint rpcId, object message)
         {
             try
             {
@@ -18,15 +18,13 @@ namespace GN
                     return;
                 }
 
-                uint rpcId = request.RpcId;
                 long sessionid = session.id;
                 var response = await this.Run(session, request);
                 if (session.id != sessionid)
                 {
                     return;
                 }
-                response.RpcId = rpcId;
-                session.Reply(response);
+                session.Reply(rpcId, response);
             }
             catch (Exception e)
             {

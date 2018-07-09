@@ -1,4 +1,6 @@
-﻿namespace GN
+﻿using System.Collections.Generic;
+
+namespace GN
 {
     public class AppInfo
     {
@@ -59,7 +61,7 @@
 
         public class Response : MessageResponse
         {
-
+            public object obj { get; set; }
         }
     }
 
@@ -73,7 +75,7 @@
         }
         public class Response : MessageResponse
         {
-
+            public List<object> objs { get; set; }
         }
     }
 }

@@ -20,6 +20,10 @@ namespace GN
                         if (type.IsNested && type.DeclaringType != null)
                         {
                             attrs = type.DeclaringType.GetCustomAttributes(typeof(MessageAttribute), false);
+                            if (attrs.Length == 0)
+                            {
+                                continue;
+                            }
                         }
                         else
                         {

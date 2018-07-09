@@ -15,7 +15,7 @@ namespace GN
         public SocketError error;
 
         private readonly Dictionary<uint, Action<IResponse>> requestCallback = new Dictionary<uint, Action<IResponse>>();
-        private readonly List<byte[]> byteses = new List<byte[]> { new byte[1], new byte[0], new byte[0] };
+        private readonly List<byte[]> byteses = new List<byte[]> { new byte[1], new byte[0], new byte[0], new byte[0] };
 
         public NetworkComponent Network
         {
@@ -97,6 +97,7 @@ namespace GN
 
             byte flag = packet.Flag;
             ushort opcode = packet.Opcode;
+            uint rpcId = packet.RpcId;
 
             if((flag & 0x01) == 0)
             {
@@ -117,12 +118,12 @@ namespace GN
             }
 
             Action<IResponse> action;
-            if(!this.requestCallback.TryGetValue(response.RpcId, out action))
+            if(!this.requestCallback.TryGetValue(rpcId, out action))
             {
                 return;
             }
 
-            this.requestCallback.Remove(response.RpcId);
+            this.requestCallback.Remove(rpcId);
 
             action(response);
         }
@@ -149,8 +150,7 @@ namespace GN
                 }
             };
 
-            request.RpcId = rpcId;
-            this.Send(0x00, request);
+            this.Send(0x00, rpcId, request);
             return tcs.Task;
         }
 
@@ -178,35 +178,34 @@ namespace GN
 
             cancellationToken.Register(() => this.requestCallback.Remove(rpcId));
 
-            request.RpcId = rpcId;
-            this.Send(0x00, request);
+            this.Send(0x00, rpcId, request);
             return tcs.Task;
         }
 
-        public void Reply(IResponse message)
+        public void Reply(uint rpcId, IResponse message)
         {
             if(this.IsDisposed)
             {
                 throw new Exception("session已经被Dispose了");
             }
 
-            this.Send(0x01, message);
+            this.Send(0x01, rpcId, message);
         }
 
         public void Send(IMessage message)
         {
-            this.Send(0x00, message);
+            this.Send(0x00, 0, message);
         }
 
-        public void Send(byte flag, IMessage message)
+        private void Send(byte flag, uint rpcId, IMessage message)
         {
             OpcodeTypeComponent opcodeTypeComponent = (this.Network.Parent as Entity).GetComponent<OpcodeTypeComponent>();
             ushort opcode = opcodeTypeComponent.GetOpcode(message.GetType());
             byte[] bytes = this.Network.MessagePacker.Serialize(message);
-            Send(flag, opcode, bytes);
+            Send(flag, opcode, rpcId, bytes);
         }
 
-        public void Send(byte flag, ushort opcode, byte[] bytes)
+        private void Send(byte flag, ushort opcode, uint rpcId, byte[] bytes)
         {
             if(this.IsDisposed)
             {
@@ -215,7 +214,8 @@ namespace GN
 
             this.byteses[0][0] = flag;
             this.byteses[1] = BitConverter.GetBytes(opcode);
-            this.byteses[2] = bytes;
+            this.byteses[2] = BitConverter.GetBytes(rpcId);
+            this.byteses[3] = bytes;
 
             client.Send(byteses);
         }

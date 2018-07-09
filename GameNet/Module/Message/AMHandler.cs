@@ -5,7 +5,7 @@ namespace GN
     public abstract class AMHandler<Request> : IMHandler where Request : class, IRequest
     {
         protected abstract void Run(Session session, Request message);
-        public void Handle(Session session, object message)
+        public void Handle(Session session, uint rpcId, object message)
         {
             try
             {

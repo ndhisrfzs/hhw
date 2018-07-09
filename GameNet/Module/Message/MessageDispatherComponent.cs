@@ -65,7 +65,7 @@ namespace GN
             {
                 try
                 {
-                    ev.Handle(session, messageInfo.Message);
+                    ev.Handle(session, messageInfo.RpcId, messageInfo.Message);
                 }
                 catch(Exception e)
                 {

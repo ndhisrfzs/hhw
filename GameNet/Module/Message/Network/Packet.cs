@@ -11,8 +11,9 @@ namespace GN
     {
         public const int FlagIndex = 0;
         public const int OpcodeIndex = 1;
+        public const int RpcIdIndex = 3;
         public const int MinSize = 2;
-        public const int Index = 3;
+        public const int Index = 7;
 
         public byte[] Bytes { get; }
 
@@ -43,6 +44,13 @@ namespace GN
             get
             {
                 return BitConverter.ToUInt16(this.Bytes, OpcodeIndex);
+            }
+        }
+        public uint RpcId
+        {
+            get
+            {
+                return BitConverter.ToUInt32(this.Bytes, RpcIdIndex);
             }
         }
     }
