@@ -2,7 +2,7 @@
 
 namespace GN
 {
-    public class MessagePakcer : IMessagePacker
+    public class MessagePackcer : IMessagePacker
     {
         public object DeserializeFrom(Type type, byte[] bytes)
         {

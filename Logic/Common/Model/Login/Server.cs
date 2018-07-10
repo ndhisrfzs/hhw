@@ -1,14 +1,17 @@
-﻿namespace Logic
+﻿using GN;
+
+namespace Logic
 {
+    [DBModel]
     public class Server
     {
-        public int id;
-        public short game_id;
-        public short status;
-        public short order_by;
-        public string name;
-        public string ip;
-        public short port;
-        public string prompt;
+        public int id { get; set; }
+        public short game_id { get; set; }
+        public short status { get; set; }
+        public short order_by { get; set; }
+        public string name { get; set; }
+        public string ip { get; set; }
+        public short port { get; set; }
+        public string prompt { get; set; }
     }
 }

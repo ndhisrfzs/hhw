@@ -4,10 +4,10 @@ namespace GN
 {
     public class AppInfo
     {
-        public int AppId { get; set; }
-        public AppType AppType { get; set; }
-        public Address InnerAddress { get; set; }
-        public Address OuterAdderss { get; set; }
+        public int appId { get; set; }
+        public AppType appType { get; set; }
+        public Address innerAddress { get; set; }
+        public Address outerAdderss { get; set; }
     }
 
     [Message(Opcode.RegisterApp)]
@@ -19,7 +19,7 @@ namespace GN
         }
         public class Response : MessageResponse
         {
-            public bool IsSuccess { get; set; }
+            public bool isSuccess { get; set; }
         }
     }
     
@@ -55,13 +55,14 @@ namespace GN
     {
         public class Request : MessageRequest
         {
-            public string CollectionName { get; set; }
-            public string Filter { get; set; }
+            public string collectionName { get; set; }
+            public string sql { get; set; }
+            public object parms { get; set; }
         }
 
         public class Response : MessageResponse
         {
-            public object obj { get; set; }
+            public object data { get; set; }
         }
     }
 
@@ -75,7 +76,7 @@ namespace GN
         }
         public class Response : MessageResponse
         {
-            public List<object> objs { get; set; }
+            public List<object> data { get; set; }
         }
     }
 }

@@ -12,10 +12,11 @@ namespace GN
             dbAddress = config.DbAddress.IpEndPoint();
         }
 
-        public async Task<T> QueryFirstOrDefault<T>(string filter)
+        public async Task<T> QueryFirstOrDefault<T>(string sql)
         {
             Session session = Game.Scene.GetComponent<NetInnerComponent>().Get(dbAddress);
-            return (T)await session.Call(new DBQueryFirst.Request() { CollectionName = typeof(T).Name, Filter = filter });
+            var response = (DBQueryFirst.Response)await session.Call(new DBQueryFirst.Request() { collectionName = typeof(T).Name, sql = sql });
+            return (T)response.data;
         }
     }
 }

@@ -9,10 +9,10 @@ namespace GN
         {
             var resp = new RegisterApp.Response();
             var master = Game.Scene.GetComponent<MasterComponent>();
-            resp.IsSuccess = master.Add(message.appInfo);
-            if(resp.IsSuccess)
+            resp.isSuccess = master.Add(message.appInfo);
+            if(resp.isSuccess)
             {
-                session.AddComponent<SlaveLifeComponent, int>(message.appInfo.AppId);
+                session.AddComponent<SlaveLifeComponent, int>(message.appInfo.appId);
             }
             return Task.FromResult(resp);
         }

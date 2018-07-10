@@ -1,4 +1,5 @@
 ﻿using GN;
+using Logic;
 using NLog;
 using System;
 using System.Net;
@@ -60,10 +61,16 @@ namespace HHW.App
                         Game.Scene.AddComponent<GateSessionKeyComponent>();
                         Game.Scene.AddComponent<NetInnerComponent, IPEndPoint>(new IPEndPoint(IPAddress.Any, config.InnerAddress.Port));
                         Game.Scene.AddComponent<NetOuterComponent, IPEndPoint>(new IPEndPoint(IPAddress.Any, config.OuterAddress.Port));
+                        Game.Scene.AddComponent<DBModelTypeComponent>();
+                        Game.Scene.AddComponent<DBProxyComponent>();
+                        Game.Scene.AddComponent<DBComponent, string>(config.DbConnection);
                         Game.Scene.AddComponent<SlaveComponent>();
                     }
                     break;
             }
+
+            var dbProxy = Game.Scene.GetComponent<DBProxyComponent>();
+            var a = dbProxy.QueryFirstOrDefault<Twill_User>("");
 
             LogManager.Configuration.Variables["appType"] = config.AppType.ToString();
             LogManager.Configuration.Variables["appId"] = config.AppId.ToString();

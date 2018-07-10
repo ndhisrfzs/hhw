@@ -12,6 +12,7 @@ namespace GN
         public Address InnerAddress;
         public Address OuterAddress;
         public Address DbAddress;
+        public string DbConnection;
         public void Awake(string path)
         {
             Dictionary<string, string> dict = new Dictionary<string, string>();
@@ -50,6 +51,10 @@ namespace GN
             if(dict.TryGetValue("DbAddress", out v))
             {
                 this.DbAddress = new Address(v);
+            }
+            if(dict.TryGetValue("DbConnection", out v))
+            {
+                this.DbConnection = v;
             }
         }
     }

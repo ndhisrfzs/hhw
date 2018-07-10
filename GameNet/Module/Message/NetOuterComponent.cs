@@ -4,7 +4,7 @@
     {
         public NetOuterComponent()
         {
-            MessagePacker = new MessagePakcer();
+            MessagePacker = new MessagePackcer();
             MessageDispatcher = new OuterMessageDispatcher();
         }
     }

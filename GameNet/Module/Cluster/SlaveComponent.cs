@@ -7,7 +7,7 @@ namespace GN
         public async void Awake()
         {
             var config = Game.Scene.GetComponent<ConfigComponent>();
-            var info = new AppInfo() { AppId = config.AppId, AppType = config.AppType, InnerAddress = config.InnerAddress, OuterAdderss = config.OuterAddress };
+            var info = new AppInfo() { appId = config.AppId, appType = config.AppType, innerAddress = config.InnerAddress, outerAdderss = config.OuterAddress };
             if (config.AppType.Is(AppType.Master))
             {
                 var master = Game.Scene.GetComponent<MasterComponent>();
@@ -20,7 +20,7 @@ namespace GN
             {
                 var session = Game.Scene.GetComponent<NetInnerComponent>().Get(config.MasterAddress.IpEndPoint());
                 var result = (RegisterApp.Response)await session.Call(new RegisterApp.Request(){ appInfo = info });
-                if (!result.IsSuccess)
+                if (!result.isSuccess)
                 {
                     Log.Error("Register Appinfo Error");
                 }

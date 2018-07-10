@@ -10,9 +10,9 @@ namespace GN
         private readonly ConcurrentDictionary<AppType, List<AppInfo>> type2Infos = new ConcurrentDictionary<AppType, List<AppInfo>>();
         public bool Add(AppInfo app)
         {
-            if(id2Info.TryAdd(app.AppId, app))
+            if(id2Info.TryAdd(app.appId, app))
             {
-                List<AppInfo> infos = type2Infos.GetOrAdd(app.AppType, new List<AppInfo>());
+                List<AppInfo> infos = type2Infos.GetOrAdd(app.appType, new List<AppInfo>());
                 infos.Add(app);
                 return true;
             }
@@ -50,9 +50,9 @@ namespace GN
             if(id2Info.TryRemove(appId, out info))
             {
                 List<AppInfo> infos;
-                if(type2Infos.TryGetValue(info.AppType, out infos))
+                if(type2Infos.TryGetValue(info.appType, out infos))
                 {
-                    infos.RemoveAll(c => c.AppId == appId);
+                    infos.RemoveAll(c => c.appId == appId);
                 }
             }
         }

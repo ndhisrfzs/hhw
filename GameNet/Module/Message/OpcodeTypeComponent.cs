@@ -9,7 +9,7 @@ namespace GN
         private readonly DoubleMap<ushort, Type> ResponseTypes = new DoubleMap<ushort, Type>();
         void Awake()
         {
-            var types = Game.EventSystem.GetTypes();// DllHelper.GetMonoTypes(typeof(Game).Assembly, DllHelper.GetLogicAssembly());
+            var types = Game.EventSystem.GetTypes();
             foreach (var type in types)
             {
                 if (!type.IsInterface && !type.IsAbstract && typeof(IMessage).IsAssignableFrom(type))

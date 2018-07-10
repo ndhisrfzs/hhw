@@ -9,7 +9,7 @@ namespace GN
 
         public NetInnerComponent()
         {
-            MessagePacker = new MessagePakcer();
+            MessagePacker = new BsonPacker();
             MessageDispatcher = new InnerMessageDispatcher();
         }
 

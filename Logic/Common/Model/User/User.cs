@@ -1,7 +1,9 @@
-﻿using System;
+﻿using GN;
+using System;
 
 namespace Logic
 {
+    [DBModel]
     public class User
     {
         public long uid { get; set; }
