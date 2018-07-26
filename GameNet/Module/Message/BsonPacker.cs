@@ -1,12 +1,15 @@
-﻿using MongoDB.Bson.IO;
-using MongoDB.Bson.Serialization;
-using System;
+﻿using System;
 using System.IO;
+#if Server
+using MongoDB.Bson.IO;
+using MongoDB.Bson.Serialization;
+#endif
 
 namespace GN
 {
     public class BsonPacker : IMessagePacker
     {
+#if Server
         public object DeserializeFrom(Type type, byte[] bytes)
         {
             return BsonSerializer.Deserialize(bytes, type);
@@ -66,5 +69,46 @@ namespace GN
                 return stringWriter.ToString();
             }
         }
+#else
+        public object DeserializeFrom(Type type, byte[] bytes)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object DeserializeFrom(Type type, byte[] bytes, int index, int count)
+        {
+            throw new NotImplementedException();
+        }
+
+        public T DeserializeFrom<T>(byte[] bytes)
+        {
+            throw new NotImplementedException();
+        }
+
+        public T DeserializeFrom<T>(byte[] bytes, int index, int count)
+        {
+            throw new NotImplementedException();
+        }
+
+        public T DeserializeFrom<T>(string str)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object DeserializeFrom(Type type, string str)
+        {
+            throw new NotImplementedException();
+        }
+
+        public byte[] Serialize(object obj)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string SerializeToText(object obj)
+        {
+            throw new NotImplementedException();
+        }
+#endif
     }
 }

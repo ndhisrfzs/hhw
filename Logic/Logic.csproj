@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <Folder Include="Common\Model\Base\" />
+    <Folder Include="Module\Component\" />
   </ItemGroup>
 
 </Project>

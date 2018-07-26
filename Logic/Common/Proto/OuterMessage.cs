@@ -41,4 +41,21 @@ namespace Logic
             public RoomInfo room_info { get; set; }
         }
     }
+
+    [Message(OuterOpcode.MatchPlayer)]
+    public class MatchPlayer
+    {
+        public class Request : MessageRequest
+        {
+            public Games game { get; set; }
+            public GameType gameType { get; set; }
+            public byte modelType { get; set; }
+
+        }
+
+        public class Response : MessageResponse
+        {
+            public bool isSuccess { get; set; }
+        }
+    }
 }

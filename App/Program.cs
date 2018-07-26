@@ -69,8 +69,8 @@ namespace HHW.App
                     break;
             }
 
-            var dbProxy = Game.Scene.GetComponent<DBProxyComponent>();
-            var a = dbProxy.QueryFirstOrDefault<Twill_User>("");
+            //var dbProxy = Game.Scene.GetComponent<DBProxyComponent>();
+            //var a = dbProxy.QueryFirstOrDefault<Twill_User>("");
 
             LogManager.Configuration.Variables["appType"] = config.AppType.ToString();
             LogManager.Configuration.Variables["appId"] = config.AppId.ToString();

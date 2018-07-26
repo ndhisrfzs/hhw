@@ -6,7 +6,8 @@ namespace GN
     public class MessageDispatherComponent : Component
     {
         public AppType AppType;
-        private readonly Dictionary<ushort, List<IMHandler>> handlers = new Dictionary<ushort, List<IMHandler>>();
+        private readonly Dictionary<ushort, IMHandler> handlers = new Dictionary<ushort, IMHandler>();
+        private readonly Dictionary<ushort, AppType> appOpcodes = new Dictionary<ushort, AppType>();
 
         public void Awake(AppType appType)
         {
@@ -18,12 +19,6 @@ namespace GN
             {
                 object[] attrs = type.GetCustomAttributes(typeof(MessageHandlerAttribute), false);
                 if (attrs.Length == 0)
-                {
-                    continue;
-                }
-
-                MessageHandlerAttribute messageHandlerAttribute = attrs[0] as MessageHandlerAttribute;
-                if(!messageHandlerAttribute.Type.Is(this.AppType))
                 {
                     continue;
                 }
@@ -40,37 +35,55 @@ namespace GN
                 {
                     continue;
                 }
+
+                MessageHandlerAttribute messageHandlerAttribute = attrs[0] as MessageHandlerAttribute;
+                this.AddOpcodeApp(opcode, messageHandlerAttribute.Type);
+                if (!messageHandlerAttribute.Type.Is(this.AppType))
+                {
+                    continue;
+                }
                 this.RegisterHandler(opcode, iMHandler);
             }
         }
 
-        public void RegisterHandler(ushort opcode, IMHandler handler)
+        private void RegisterHandler(ushort opcode, IMHandler handler)
         {
-            if(!this.handlers.ContainsKey(opcode))
+            if(!this.handlers.TryAdd(opcode, handler))
             {
-                this.handlers.Add(opcode, new List<IMHandler>());
+                Log.Error("RegisterHandler Error repeat handler opcode:" + opcode);
             }
-            this.handlers[opcode].Add(handler);
+        }
+
+        private void AddOpcodeApp(ushort opcode, AppType type)
+        {
+            if(!this.appOpcodes.TryAdd(opcode, type))
+            {
+                Log.Error("AddOpcodeApp Error repeat opcode:" + opcode);
+            }
+        }
+
+        public AppType GetOpcodeApp(ushort opcode)
+        {
+            AppType type;
+            this.appOpcodes.TryGetValue(opcode, out type);
+            return type;
         }
 
         public void Handle(Session session, MessageInfo messageInfo)
         {
-            List<IMHandler> actions;
-            if(!this.handlers.TryGetValue(messageInfo.Opcode, out actions))
+            IMHandler ev;
+            if (!this.handlers.TryGetValue(messageInfo.Opcode, out ev))
             {
                 return;
             }
 
-            foreach (IMHandler ev in actions)
+            try
             {
-                try
-                {
-                    ev.Handle(session, messageInfo.RpcId, messageInfo.Message);
-                }
-                catch(Exception e)
-                {
-                    Console.WriteLine(e.ToString());
-                }
+                ev.Handle(session, messageInfo.RpcId, messageInfo.Message);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
             }
         }
 
