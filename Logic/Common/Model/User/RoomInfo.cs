@@ -6,6 +6,7 @@ namespace Logic
 {
     public class RoomInfo
     {
+        public Action<RoomInfo> requestCallback;
         public int key;
         public GameState game_state;
         public Games game;
@@ -24,6 +25,15 @@ namespace Logic
             this.game_type = game_type;
             this.model_type = model_type;
             this.players = new PlayerInfo[] { null, null, null, null };
+        }
+
+        public void Broadcast()
+        {
+            requestCallback?.Invoke(this);
+            foreach (var item in requestCallback.GetInvocationList())
+            {
+                requestCallback -= item as Action<RoomInfo>;
+            } 
         }
 
         /// <summary>

@@ -53,6 +53,9 @@ namespace HHW.App
                     {
                         Game.Scene.AddComponent<NetInnerComponent, IPEndPoint>(new IPEndPoint(IPAddress.Any, config.InnerAddress.Port));
                         Game.Scene.AddComponent<SlaveComponent>();
+                        Game.Scene.AddComponent<RandomComponent>();
+                        Game.Scene.AddComponent<RoomKeyComponent, int>(899999);
+                        Game.Scene.AddComponent<RoomManagerComponent>();
                     }
                     break;
                 case AppType.AllServer:
@@ -65,6 +68,9 @@ namespace HHW.App
                         Game.Scene.AddComponent<DBProxyComponent>();
                         Game.Scene.AddComponent<DBComponent, string>(config.DbConnection);
                         Game.Scene.AddComponent<SlaveComponent>();
+                        Game.Scene.AddComponent<RandomComponent>();
+                        Game.Scene.AddComponent<RoomKeyComponent, int>(899999);
+                        Game.Scene.AddComponent<RoomManagerComponent>();
                     }
                     break;
             }
