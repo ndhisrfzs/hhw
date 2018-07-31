@@ -48,5 +48,12 @@ namespace GN
             Game.EventSystem.Awake(obj, a, b);
             return obj;
         }
+
+        public static T Create<T>() where T :Object
+        {
+            T obj = ObjectPool.Fetch<T>();
+            Game.EventSystem.Awake(obj);
+            return obj;
+        }
     }
 }

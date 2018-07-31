@@ -6,6 +6,7 @@
 
     public interface IRequest : IMessage
     {
+        long ActorId { get; set; }
     }
 
     public interface IResponse : IMessage
@@ -16,6 +17,7 @@
 
     public class MessageRequest : IRequest
     {
+        public long ActorId { get; set; }
     }
 
     public class MessageResponse : IResponse

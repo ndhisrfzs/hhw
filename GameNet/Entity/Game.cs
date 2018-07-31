@@ -7,7 +7,7 @@
         {
             get
             {
-                if(scene == null)
+                if (scene == null)
                 {
                     scene = new Scene();
                 }
@@ -20,11 +20,24 @@
         {
             get
             {
-                if(eventSystem == null)
+                if (eventSystem == null)
                 {
                     eventSystem = new EventSystem();
                 }
                 return eventSystem;
+            }
+        }
+
+        private static EntityManager entityManager;
+        public static EntityManager EntityManager
+        {
+            get
+            {
+                if(entityManager == null)
+                {
+                    entityManager = new EntityManager();
+                }
+                return entityManager;
             }
         }
     }

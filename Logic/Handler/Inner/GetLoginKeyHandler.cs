@@ -4,7 +4,7 @@ using GN;
 namespace Logic
 {
     [MessageHandler(AppType.Gate)]
-    public class GetLoginKeyHandler : AMRpcHandler<GetLoginKey.Request, GetLoginKey.Response>
+    public class GetLoginKeyHandler : AMRpcHandler<Session, GetLoginKey.Request, GetLoginKey.Response>
     {
         protected override Task<GetLoginKey.Response> Run(Session session, GetLoginKey.Request message)
         {

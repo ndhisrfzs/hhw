@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace GN
 {
     public interface IMHandler
     {
-        void Handle(Session session, uint rpcId, object message);
+        Task Handle(Session session, Entity entity, uint rpcId, object message);
         Type GetMessageType();
     }
 }

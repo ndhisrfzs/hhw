@@ -27,6 +27,10 @@ namespace GN
                 {
                     (obj as Component).AddEventSystem();
                 }
+                else if(obj is Entity)
+                {
+                    (obj as Entity).AddEntityManager();
+                }
                 return obj;
             }
 

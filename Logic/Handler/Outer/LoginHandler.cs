@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace Logic
 {
     [MessageHandler(AppType.Login)]
-    public class LoginHandler : AMRpcHandler<Login.Request, Login.Response>
+    public class LoginHandler : AMRpcHandler<Session, Login.Request, Login.Response>
     {
         protected override async Task<Login.Response> Run(Session session, Login.Request message)
         {

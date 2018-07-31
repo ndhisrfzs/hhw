@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace GN
 {
-    public abstract class AMHandler<Request> : IMHandler where Request : class, IRequest
+    public abstract class AMHandler<E, Request> : IMHandler where E : Entity where Request : class, IRequest
     {
-        protected abstract void Run(Session session, Request message);
-        public void Handle(Session session, uint rpcId, object message)
+        protected abstract Task Run(E entity, Request message);
+        public async Task Handle(Session session, Entity entity, uint rpcId, object message)
         {
             try
             {
@@ -15,7 +16,7 @@ namespace GN
                     return;
                 }
 
-                this.Run(session, request);
+                await this.Run(entity as E, request);
             }
             catch (Exception e)
             {

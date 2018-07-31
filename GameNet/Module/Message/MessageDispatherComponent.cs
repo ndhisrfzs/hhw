@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace GN
 {
@@ -7,7 +8,6 @@ namespace GN
     {
         public AppType AppType;
         private readonly Dictionary<ushort, IMHandler> handlers = new Dictionary<ushort, IMHandler>();
-        private readonly Dictionary<ushort, AppType> appOpcodes = new Dictionary<ushort, AppType>();
 
         public void Awake(AppType appType)
         {
@@ -19,6 +19,12 @@ namespace GN
             {
                 object[] attrs = type.GetCustomAttributes(typeof(MessageHandlerAttribute), false);
                 if (attrs.Length == 0)
+                {
+                    continue;
+                }
+
+                MessageHandlerAttribute messageHandlerAttribute = attrs[0] as MessageHandlerAttribute;
+                if (!messageHandlerAttribute.Type.Is(this.AppType))
                 {
                     continue;
                 }
@@ -35,13 +41,7 @@ namespace GN
                 {
                     continue;
                 }
-
-                MessageHandlerAttribute messageHandlerAttribute = attrs[0] as MessageHandlerAttribute;
-                this.AddOpcodeApp(opcode, messageHandlerAttribute.Type);
-                if (!messageHandlerAttribute.Type.Is(this.AppType))
-                {
-                    continue;
-                }
+                
                 this.RegisterHandler(opcode, iMHandler);
             }
         }
@@ -54,22 +54,12 @@ namespace GN
             }
         }
 
-        private void AddOpcodeApp(ushort opcode, AppType type)
+        public bool IsLocalHandler(ushort opcode)
         {
-            if(!this.appOpcodes.TryAdd(opcode, type))
-            {
-                Log.Error("AddOpcodeApp Error repeat opcode:" + opcode);
-            }
+            return handlers.ContainsKey(opcode);
         }
 
-        public AppType GetOpcodeApp(ushort opcode)
-        {
-            AppType type;
-            this.appOpcodes.TryGetValue(opcode, out type);
-            return type;
-        }
-
-        public void Handle(Session session, MessageInfo messageInfo)
+        public async Task Handle(Session session, MessageInfo messageInfo)
         {
             IMHandler ev;
             if (!this.handlers.TryGetValue(messageInfo.Opcode, out ev))
@@ -79,7 +69,7 @@ namespace GN
 
             try
             {
-                ev.Handle(session, messageInfo.RpcId, messageInfo.Message);
+                await ev.Handle(session, messageInfo.entity, messageInfo.RpcId, messageInfo.Message);
             }
             catch (Exception e)
             {

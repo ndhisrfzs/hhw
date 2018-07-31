@@ -13,19 +13,21 @@ namespace GN
             object message = session.Network.MessagePacker.DeserializeFrom(messageType, packet.Bytes, Packet.Index, packet.Length);
             if (message != null)
             {
-                var config = Game.Scene.GetComponent<ConfigComponent>();
-                if (config.AppType.Is(AppType.Gate))    // 判断当前是否gate
+                var messageDispather = Game.Scene.GetComponent<MessageDispatherComponent>();
+                if (messageDispather.IsLocalHandler(opcode))    //命令是否在本进程
                 {
-                    var messageDispather = Game.Scene.GetComponent<MessageDispatherComponent>();
-                    var type = messageDispather.GetOpcodeApp(opcode);
-                    if (type.Is(config.AppType))    //命令是否在本app
+                    await Game.Scene.GetComponent<MessageDispatherComponent>().Handle(session, new MessageInfo(opcode, rpcId, session, message));
+                }
+                else          //命令转发
+                {
+                    var actor = session.GetComponent<ActorIdComponent>();
+                    int appId = IdGenerater.GetAppIdFromId(actor.ActorId);
+                    var appInfo = await Game.Scene.GetComponent<SlaveComponent>().Get(appId);
+                    (message as IRequest).ActorId = actor.ActorId;
+                    var innerSession = Game.Scene.GetComponent<NetInnerComponent>().Get(appInfo.innerAddress.IpEndPoint());
+                    if (Game.Scene.GetComponent<OpcodeTypeComponent>().HasResponse(opcode))
                     {
-                        Game.Scene.GetComponent<MessageDispatherComponent>().Handle(session, new MessageInfo(opcode, rpcId, message));
-                    }
-                    else          //命令转发
-                    {
-                        var playerSessionManager = session.GetComponent<PlayerSessionManagerComponent>();
-                        var response = await playerSessionManager.Call(type, message);
+                        var response = await innerSession.Call(message as IRequest);
                         if (response == null)
                         {
                             session.Reply(rpcId, new MessageResponse() { Error = ErrorCode.ERR_RpcFail, Message = "Rpc Invoke Failed" });
@@ -35,10 +37,10 @@ namespace GN
                             session.Reply(rpcId, response);
                         }
                     }
-                }
-                else             //非Gate命令不会转发
-                {
-                    Game.Scene.GetComponent<MessageDispatherComponent>().Handle(session, new MessageInfo(opcode, rpcId, message));
+                    else
+                    {
+                        innerSession.Send(message as IRequest);
+                    }
                 }
             }
         }

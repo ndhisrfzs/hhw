@@ -28,6 +28,8 @@
             base.Dispose();
 
             Game.EventSystem.Destroy(this);
+
+            Game.EventSystem.Remove(this.id);
         }
     }
 }

@@ -3,7 +3,7 @@
 namespace GN
 {
     [MessageHandler(AppType.Master)]
-    public class RegisterAppHandler : AMRpcHandler<RegisterApp.Request, RegisterApp.Response>
+    public class RegisterAppHandler : AMRpcHandler<Session, RegisterApp.Request, RegisterApp.Response>
     {
         protected override Task<RegisterApp.Response> Run(Session session, RegisterApp.Request message)
         {
@@ -19,7 +19,7 @@ namespace GN
     }
 
     [MessageHandler(AppType.Master)]
-    public class GetAppByIdHandlder : AMRpcHandler<GetAppById.Request, GetAppById.Response>
+    public class GetAppByIdHandlder : AMRpcHandler<Session, GetAppById.Request, GetAppById.Response>
     {
         protected override Task<GetAppById.Response> Run(Session session, GetAppById.Request message)
         {
@@ -31,7 +31,7 @@ namespace GN
     }
 
     [MessageHandler(AppType.Master)]
-    public class GetAppByTypeHandlder : AMRpcHandler<GetAppByType.Request, GetAppByType.Response>
+    public class GetAppByTypeHandlder : AMRpcHandler<Session, GetAppByType.Request, GetAppByType.Response>
     {
         protected override Task<GetAppByType.Response> Run(Session session, GetAppByType.Request message)
         {

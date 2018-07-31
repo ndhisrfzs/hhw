@@ -15,4 +15,18 @@ namespace Logic
             public long key { get; set; }
         }
     }
+
+    [Message(InnerOpcode.GetGamePlayerId)]
+    public class GetGamePlayerId
+    {
+        public class Request : MessageRequest
+        {
+
+        }
+
+        public class Response : MessageResponse
+        {
+            public long id { get; set; }
+        }
+    }
 }

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 namespace GN
 {
     [MessageHandler(AppType.DB)]
-    public class DBQueryFirstHandler : AMRpcHandler<DBQueryFirst.Request, DBQueryFirst.Response>
+    public class DBQueryFirstHandler : AMRpcHandler<Session, DBQueryFirst.Request, DBQueryFirst.Response>
     {
         protected override Task<DBQueryFirst.Response> Run(Session session, DBQueryFirst.Request message)
         {

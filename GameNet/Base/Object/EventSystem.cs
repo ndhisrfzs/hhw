@@ -85,6 +85,11 @@ namespace GN
             }
         }
 
+        public void Remove(long id)
+        {
+            this.allComponents.Remove(id);
+        }
+
         public void Load()
         {
             while(loaders.Count > 0)

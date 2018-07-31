@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 namespace GN
 {
    
-    public abstract class AMRpcHandler<Request, Response> : IMHandler where Request : class, IRequest where Response : class, IResponse
+    public abstract class AMRpcHandler<E, Request, Response> : IMHandler where E : Entity where Request : class, IRequest where Response : class, IResponse
     {
-        protected abstract Task<Response> Run(Session session, Request message);
+        protected abstract Task<Response> Run(E entity, Request message);
 
-        public async void Handle(Session session, uint rpcId, object message)
+        public async Task Handle(Session session, Entity entity, uint rpcId, object message)
         {
             try
             {
@@ -19,7 +19,7 @@ namespace GN
                 }
 
                 long sessionid = session.id;
-                var response = await this.Run(session, request);
+                var response = await this.Run(entity as E, request);
                 if (session.id != sessionid)
                 {
                     return;
