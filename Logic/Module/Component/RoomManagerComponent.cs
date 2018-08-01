@@ -8,45 +8,12 @@ using System.Timers;
 
 namespace Logic
 {
-    public interface IMatcher
-    {
-        long uid { get; set; }
-        int score { get; set; }
-        Games game { get; set; }
-        GameType game_type { get; set; }
-        byte model_type { get; set; }
-    }
-
-    public class MatchData<T>
-        where T : class, IMatcher
-    {
-        public T data;
-        public DateTime time;
-        public MatchData(T data)
-        {
-            this.data = data;
-            this.time = DateTime.Now;
-        }
-    }
-
-    public class Matcher : IMatcher
-    {
-        public long uid { get; set; }
-        public string name { get; set; }
-        public short sex { get; set; }
-        public string head_url { get; set; }
-        public int score { get; set; }
-        public Games game { get; set; }
-        public GameType game_type { get; set; }
-        public byte model_type { get; set; }
-    }
-
     public class RoomManagerComponent : Component
     {
         private ConcurrentDictionary<int, RoomInfo> m_Hall = new ConcurrentDictionary<int, RoomInfo>();
         private ConcurrentDictionary<long, int> m_playings = new ConcurrentDictionary<long, int>();
 
-        protected void Start()
+        protected async void Start()
         {
             while (true)
             {
@@ -63,29 +30,33 @@ namespace Logic
                         NextPlayer(room.Value, cards);
                     }
                 }
-                Task.Delay(1000);
+                await Game.Scene.GetComponent<TimerComponent>().WaitAsync(1000);
             }
         }
 
-        public Task<RoomInfo> WaitRoomInfoUpdate(int roomKey, long uid)
+        public Task<RoomInfo> WaitForRoomInfoUpdate(long uid)
         {
-            RoomInfo roomInfo;
-            if (m_Hall.TryGetValue(roomKey, out roomInfo))
+            int roomKey;
+            if (m_playings.TryGetValue(uid, out roomKey))
             {
-                var tcs = new TaskCompletionSource<RoomInfo>();
-                roomInfo.requestCallback += (response) =>
+                RoomInfo roomInfo;
+                if (m_Hall.TryGetValue(roomKey, out roomInfo))
                 {
-                    try
+                    var tcs = new TaskCompletionSource<RoomInfo>();
+                    roomInfo.requestCallback += (response) =>
                     {
-                        tcs.SetResult(response);
-                    }
-                    catch (Exception e)
-                    {
-                        tcs.SetException(e);
-                    }
-                };
+                        try
+                        {
+                            tcs.SetResult(response);
+                        }
+                        catch (Exception e)
+                        {
+                            tcs.SetException(e);
+                        }
+                    };
 
-                return tcs.Task;
+                    return tcs.Task;
+                }
             }
             return null;
         }
@@ -573,6 +544,7 @@ namespace Logic
                         room_info.CopyHandCard(room_info.players[i].uid);
                     }
 
+                    room_info.Broadcast();
                     //Env.TheServer.BeginInvokeClientService(room_info.players[i].uid, (int)ClientCommand.UpdateRoom, new object[] { room_info });
                 }
             }

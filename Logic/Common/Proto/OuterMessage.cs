@@ -58,4 +58,17 @@ namespace Logic
             public bool isSuccess { get; set; }
         }
     }
+
+    [Message(OuterOpcode.GetRoomInfo)]
+    public class GetRoomInfo
+    {
+        public class Request : MessageRequest
+        {
+
+        }
+        public class Response : MessageResponse
+        {
+            public RoomInfo roomInfo { get; set; }
+        }
+    }
 }

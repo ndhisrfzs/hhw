@@ -6,5 +6,6 @@
         public const ushort Login = 102;
         public const ushort GateLogin = 103;
         public const ushort MatchPlayer = 104;
+        public const ushort GetRoomInfo = 105;
     }
 }

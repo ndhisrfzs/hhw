@@ -6,7 +6,6 @@ namespace Logic
 {
     public class RoomInfo
     {
-        public Action<RoomInfo> requestCallback;
         public int key;
         public GameState game_state;
         public Games game;
@@ -15,6 +14,8 @@ namespace Logic
         public PlayerInfo[] players;
         public DiscardInfo discard_info;
         public DateTime now;
+
+        public Action<RoomInfo> requestCallback;
 
         public RoomInfo() { }
 

@@ -11,6 +11,7 @@ namespace Logic
             GetGamePlayerId.Response resp = new GetGamePlayerId.Response();
             GamePlayer player = ObjectFactory.Create<GamePlayer>();
             player.AddComponent<ActorComponent>();
+            player.uid = player.id;
 
             resp.id = player.id;
 
