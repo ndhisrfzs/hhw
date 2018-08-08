@@ -42,6 +42,13 @@ namespace GN
             return obj;
         }
 
+        public static T CreateWithId<T>(long id) where T : Object
+        {
+            T obj = ObjectPool.Fetch<T>(id);
+            Game.EventSystem.Awake(obj);
+            return obj;
+        }
+
         public static T Create<T, A, B>(A a, B b) where T : Object
         {
             T obj = ObjectPool.Fetch<T>();

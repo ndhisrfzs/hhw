@@ -7,7 +7,24 @@ namespace GN
     {
         private static readonly Dictionary<Type, Queue<Object>> dictionary = new Dictionary<Type, Queue<Object>>();
 
+        public static T Fetch<T>(long id)
+            where T : Object
+        {
+            T t = fetch<T>();
+            t.id = id;
+            t.AddManager();
+            return t;
+        }
+
         public static T Fetch<T>()
+            where T : Object
+        {
+            T t = fetch<T>();
+            t.AddManager();
+            return t;
+        }
+
+        private static T fetch<T>()
             where T : Object
         {
             Type type = typeof(T);
@@ -23,14 +40,6 @@ namespace GN
             {
                 obj = (T)queue.Dequeue();
                 obj.IsFromPool = true;
-                if(obj is Component)
-                {
-                    (obj as Component).AddEventSystem();
-                }
-                else if(obj is Entity)
-                {
-                    (obj as Entity).AddEntityManager();
-                }
                 return obj;
             }
 

@@ -4,7 +4,7 @@ namespace GN
 {
     public abstract class Object : IDisposable
     {
-        public long id { get; protected set; }
+        public long id { get; set; }
         protected Object()
         {
             this.id = IdGenerater.GenerateId();
@@ -13,6 +13,8 @@ namespace GN
         {
             this.id = id;
         }
+
+        public abstract void AddManager();
 
         private bool isFromPool;
         public bool IsFromPool

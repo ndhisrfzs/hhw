@@ -5,15 +5,13 @@
         public Component()
             :base()
         {
-            AddEventSystem();
         }
         public Component(long id)
             :base(id)
         {
-            AddEventSystem();
         }
 
-        public void AddEventSystem()
+        public override void AddManager()
         {
             Game.EventSystem.Add(this);            
         }

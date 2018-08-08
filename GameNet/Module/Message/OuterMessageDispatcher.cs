@@ -25,7 +25,7 @@ namespace GN
                     var appInfo = await Game.Scene.GetComponent<SlaveComponent>().Get(appId);
                     (message as IRequest).ActorId = actor.ActorId;
                     var innerSession = Game.Scene.GetComponent<NetInnerComponent>().Get(appInfo.innerAddress.IpEndPoint());
-                    if (Game.Scene.GetComponent<OpcodeTypeComponent>().HasResponse(opcode))
+                    if (rpcId > 0)
                     {
                         var response = await innerSession.Call(message as IRequest);
                         if (response == null)

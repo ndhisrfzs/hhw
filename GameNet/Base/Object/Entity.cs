@@ -11,17 +11,15 @@ namespace GN
         protected Entity()
         {
             this.componentDict = new Dictionary<Type, Component>();
-            this.AddEntityManager();
         }
 
         protected Entity(long id)
             : base(id)
         {
             this.componentDict = new Dictionary<Type, Component>();
-            this.AddEntityManager();
         }
 
-        public void AddEntityManager()
+        public override void AddManager()
         {
             Game.EntityManager.Add(this);
         }

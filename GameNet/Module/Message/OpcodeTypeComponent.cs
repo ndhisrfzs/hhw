@@ -69,10 +69,10 @@ namespace GN
             return this.ResponseTypes.GetValueByKey(opcode);
         }
 
-        public bool HasResponse(ushort opcode)
-        {
-            return this.ResponseTypes.ContainsKey(opcode);
-        }
+        //public bool HasResponse(ushort opcode)
+        //{
+        //    return this.ResponseTypes.ContainsKey(opcode);
+        //}
 
         public override void Dispose()
         {
