@@ -14,7 +14,10 @@ namespace GN
             this.id = id;
         }
 
-        public abstract void AddManager();
+        public virtual void AddManager()
+        {
+
+        }
 
         private bool isFromPool;
         public bool IsFromPool

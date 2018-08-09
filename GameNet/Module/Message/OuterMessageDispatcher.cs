@@ -13,21 +13,19 @@ namespace GN
             object message = session.Network.MessagePacker.DeserializeFrom(messageType, packet.Bytes, Packet.Index, packet.Length);
             if (message != null)
             {
-                var messageDispather = Game.Scene.GetComponent<MessageDispatherComponent>();
-                if (messageDispather.IsLocalHandler(opcode))    //命令是否在本进程
+                var actor = session.GetComponent<RedirectActorIdComponent>();
+                if (actor == null)
                 {
+                    //不需要转发
                     await Game.Scene.GetComponent<MessageDispatherComponent>().Handle(session, new MessageInfo(opcode, rpcId, session, message));
                 }
-                else          //命令转发
+                else          
                 {
-                    var actor = session.GetComponent<ActorIdComponent>();
-                    int appId = IdGenerater.GetAppIdFromId(actor.ActorId);
-                    var appInfo = await Game.Scene.GetComponent<SlaveComponent>().Get(appId);
-                    (message as IRequest).ActorId = actor.ActorId;
-                    var innerSession = Game.Scene.GetComponent<NetInnerComponent>().Get(appInfo.innerAddress.IpEndPoint());
+                    //命令转发
+                    var actorMessageSender = Game.Scene.GetComponent<ActorMessageSenderComponent>().Get(actor.ActorId);
                     if (rpcId > 0)
                     {
-                        var response = await innerSession.Call(message as IRequest);
+                        var response = await actorMessageSender.Call(message as IRequest);
                         if (response == null)
                         {
                             session.Reply(rpcId, new MessageResponse() { Error = ErrorCode.ERR_RpcFail, Message = "Rpc Invoke Failed" });
@@ -39,7 +37,7 @@ namespace GN
                     }
                     else
                     {
-                        innerSession.Send(message as IRequest);
+                        actorMessageSender.Send(message as IRequest);
                     }
                 }
             }

@@ -19,11 +19,6 @@ namespace GN
             this.componentDict = new Dictionary<Type, Component>();
         }
 
-        public override void AddManager()
-        {
-            Game.EntityManager.Add(this);
-        }
-
         public override void Dispose()
         {
             if(this.IsDisposed)
@@ -46,8 +41,6 @@ namespace GN
             }
 
             this.componentDict.Clear();
-
-            Game.EntityManager.Remove(id);
         }
 
         public Component AddComponent(Type type)

@@ -114,19 +114,13 @@ namespace GN
         {
             Session session = Game.Scene.GetComponent<NetInnerComponent>().Get(this.Address);
             task.message.ActorId = this.ActorId;
-            if (task.tcs == null)
-            {
-                session.Send(task.message);
-                this.WaitingMessages.Dequeue();
-                return;
-            }
             IResponse response = await session.Call(task.message);
             switch(response.Error)
             {
                 case ErrorCode.ERR_Success:
                     {
                         this.WaitingMessages.Dequeue();
-                        task.tcs.SetResult(response);
+                        task.tcs?.SetResult(response);
                     }
                     break;
                 default:
@@ -136,6 +130,20 @@ namespace GN
                     }
                     break;
             }
+        }
+
+        public Task<IResponse> Call(IRequest request)
+        {
+            TaskCompletionSource<IResponse> tcs = new TaskCompletionSource<IResponse>();
+            ActorTask task = new ActorTask(request, tcs);
+            this.Add(task);
+            return task.tcs.Task;
+        }
+
+        public void Send(IRequest request)
+        {
+            ActorTask task = new ActorTask(request);
+            this.Add(task);
         }
 
         public override void Dispose()

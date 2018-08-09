@@ -12,7 +12,7 @@ namespace GN
             object message = session.Network.MessagePacker.DeserializeFrom(messageType, packet.Bytes, Packet.Index, packet.Length);
             if((message as IRequest).ActorId > 0)
             {
-                Entity entity = Game.EntityManager.Get((message as IRequest).ActorId);
+                Entity entity = Game.Scene.GetComponent<ActorManagerComponent>().GetActor((message as IRequest).ActorId);
                 if(entity != null)
                 {
                     (message as IRequest).ActorId = 0;

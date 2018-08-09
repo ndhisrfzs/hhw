@@ -9,11 +9,11 @@ namespace Logic
         protected override Task<GetGamePlayerId.Response> Run(Session entity, GetGamePlayerId.Request message)
         {
             GetGamePlayerId.Response resp = new GetGamePlayerId.Response();
-            GamePlayer player = ObjectFactory.Create<GamePlayer>();
+            GamePlayer player = ObjectFactory.CreateWithParent<GamePlayer>(entity);
             player.AddComponent<ActorComponent>();
-            player.uid = player.id;
+            player.uid = message.sessionId;
 
-            resp.id = player.id;
+            resp.actorId = player.id;
 
             return Task.FromResult(resp);
         }

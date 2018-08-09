@@ -1,6 +1,6 @@
 ﻿namespace GN
 {
-    public class ActorIdComponent : Component
+    public class RedirectActorIdComponent : Component
     {
         public long ActorId;
     }

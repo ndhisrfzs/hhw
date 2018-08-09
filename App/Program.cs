@@ -19,6 +19,8 @@ namespace HHW.App
             Game.Scene.AddComponent<OpcodeTypeComponent>();
             Game.Scene.AddComponent<MessageDispatherComponent, AppType>(config.AppType);
             Game.Scene.AddComponent<TimerComponent>();
+            Game.Scene.AddComponent<ActorManagerComponent>();
+            Game.Scene.AddComponent<ActorMessageSenderComponent>();
 
             switch(config.AppType)
             {

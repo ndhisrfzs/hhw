@@ -17,12 +17,13 @@ namespace Logic
                 var gameConfig = await slave.Get(AppType.Game);
                 var gameSession = Game.Scene.GetComponent<NetInnerComponent>().Get(gameConfig.innerAddress.IpEndPoint());
 
-                var gamePlayerId =(GetGamePlayerId.Response)await gameSession.Call(new GetGamePlayerId.Request() { });
-                session.AddComponent<ActorIdComponent, long>(gamePlayerId.id);
+                var gamePlayerId =(GetGamePlayerId.Response)await gameSession.Call(new GetGamePlayerId.Request() { sessionId = session.id });
+                session.AddComponent<RedirectActorIdComponent, long>(gamePlayerId.actorId);
+                session.AddComponent<ActorComponent, ActorHandlerType>(ActorHandlerType.Gate);
 
                 resp.twill_user = new Twill_User()
                 {
-                    uid = gamePlayerId.id,
+                    uid = gamePlayerId.actorId,
                     name = "玩家" + account.Substring(account.Length - 3),
                     gold = 100
                 };

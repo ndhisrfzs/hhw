@@ -17,6 +17,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="ClusterConfig">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

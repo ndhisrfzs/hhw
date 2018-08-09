@@ -15,7 +15,7 @@
             }
         }
 
-        private static EventSystem eventSystem;
+       private static EventSystem eventSystem;
         public static EventSystem EventSystem
         {
             get
@@ -25,19 +25,6 @@
                     eventSystem = new EventSystem();
                 }
                 return eventSystem;
-            }
-        }
-
-        private static EntityManager entityManager;
-        public static EntityManager EntityManager
-        {
-            get
-            {
-                if(entityManager == null)
-                {
-                    entityManager = new EntityManager();
-                }
-                return entityManager;
             }
         }
     }

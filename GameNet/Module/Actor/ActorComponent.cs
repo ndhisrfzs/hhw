@@ -13,11 +13,34 @@ namespace GN
     }
     public class ActorComponent : Component
     {
-        private Queue<ActorMessage> m_Queue = new Queue<ActorMessage>();
+        private IActorHandler ActorHandler;
+        private Queue<ActorMessage> ActorMessages = new Queue<ActorMessage>();
         private TaskCompletionSource<ActorMessage> Tcs;
         public void Awake()
         {
-            m_Queue.Clear();
+            ActorHandler = new CommonActorHandler();
+            ActorMessages.Clear();
+            AddLocaltion();
+        }
+
+        public void Awake(ActorHandlerType handlerType)
+        {
+            switch(handlerType)
+            {
+                case ActorHandlerType.Gate:
+                    ActorHandler = new GateActorHandler();
+                    break;
+                case ActorHandlerType.Common:
+                    ActorHandler = new CommonActorHandler();
+                    break;
+            }
+            ActorMessages.Clear();
+            AddLocaltion();
+        }
+
+        public void Destroy()
+        {
+            RemoveLocaltion();
         }
 
         public async void Start()
@@ -33,7 +56,7 @@ namespace GN
                         return;
                     }
 
-                    await Game.Scene.GetComponent<MessageDispatherComponent>().Handle(msg.session, new MessageInfo(msg.opcode, msg.rpcId, Parent as Entity, msg.message));
+                    await ActorHandler.Handle(msg.session, new MessageInfo(msg.opcode, msg.rpcId, (this.Parent as Entity), msg.message));
                 }
                 catch(Exception e)
                 {
@@ -42,19 +65,19 @@ namespace GN
             }
         }
 
-        public async Task AddLocaltion()
+        public void AddLocaltion()
         {
-            //await Game.Scene.GetComponent<LocationProxyComponent>().Add(Parent.id);
+            Game.Scene.GetComponent<ActorManagerComponent>().Add(this.Parent as Entity);
         }
 
-        public async Task RemoveLocaltion()
+        public void RemoveLocaltion()
         {
-            //await Game.Scene.GetComponent<LocationProxyComponent>().Remove(Parent.id);
+            Game.Scene.GetComponent<ActorManagerComponent>().Remove(Parent.id);
         }
 
         public void Add(ActorMessage message)
         {
-            this.m_Queue.Enqueue(message);
+            this.ActorMessages.Enqueue(message);
             if(this.Tcs == null)
             {
                 return;
@@ -62,14 +85,14 @@ namespace GN
 
             var t = this.Tcs;
             this.Tcs = null;
-            t.SetResult(this.m_Queue.Dequeue());
+            t.SetResult(this.ActorMessages.Dequeue());
         }
 
         private Task<ActorMessage> GetAsync()
         {
-            if(this.m_Queue.Count > 0)
+            if(this.ActorMessages.Count > 0)
             {
-                return Task.FromResult(this.m_Queue.Dequeue());
+                return Task.FromResult(this.ActorMessages.Dequeue());
             }
 
             this.Tcs = new TaskCompletionSource<ActorMessage>();

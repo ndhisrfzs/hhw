@@ -21,12 +21,12 @@ namespace Logic
     {
         public class Request : MessageRequest
         {
-
+            public long sessionId { get; set; }
         }
 
         public class Response : MessageResponse
         {
-            public long id { get; set; }
+            public long actorId { get; set; }
         }
     }
 }
