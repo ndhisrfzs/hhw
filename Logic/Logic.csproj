@@ -15,11 +15,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Handler\Inner\M2G_MatchSuccessHandler.cs~RF900a87a3.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\GameNet\GameNet.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Common\Model\Base\" />
+    <Folder Include="Handler\Outer\Match\" />
   </ItemGroup>
 
 </Project>

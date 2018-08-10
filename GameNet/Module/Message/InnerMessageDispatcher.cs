@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace GN
 {
@@ -6,6 +7,7 @@ namespace GN
     {
         public async void Dispatch(Session session, Packet packet)
         {
+#if Server
             ushort opcode = packet.Opcode;
             uint rpcId = packet.RpcId;
             Type messageType = Game.Scene.GetComponent<OpcodeTypeComponent>().GetRequestType(opcode);
@@ -17,10 +19,14 @@ namespace GN
                 {
                     (message as IRequest).ActorId = 0;
                     entity.GetComponent<ActorComponent>().Add(new ActorMessage() { rpcId = rpcId, opcode = opcode, session = session, message = message });
+                    return;
                 }
             }
 
             await Game.Scene.GetComponent<MessageDispatherComponent>().Handle(session, new MessageInfo(opcode, rpcId, session, message));
+#else
+            await Task.CompletedTask;
+#endif
         }
     }
 }

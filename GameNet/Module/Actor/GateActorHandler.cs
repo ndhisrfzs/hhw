@@ -20,7 +20,7 @@ namespace GN
             }
             catch(Exception e)
             {
-                throw;
+                throw e;
             }
         }
     }

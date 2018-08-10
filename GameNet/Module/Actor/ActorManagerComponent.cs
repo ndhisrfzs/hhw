@@ -1,6 +1,5 @@
-﻿using System;
+﻿#if Server
 using System.Collections.Generic;
-using System.Text;
 
 namespace GN
 {
@@ -28,3 +27,4 @@ namespace GN
         }
     }
 }
+#endif

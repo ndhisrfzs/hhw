@@ -71,4 +71,13 @@ namespace Logic
             public RoomInfo roomInfo { get; set; }
         }
     }
+
+    [Message(OuterOpcode.RoomInitSuccess)]
+    public class RoomInitSuccess
+    {
+        public class Request : MessageRequest
+        {
+
+        }
+    }
 }

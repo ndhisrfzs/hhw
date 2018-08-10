@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿#if Server
+using System.Threading.Tasks;
 
 namespace GN
 {
@@ -60,3 +61,4 @@ namespace GN
         }
     }
 }
+#endif

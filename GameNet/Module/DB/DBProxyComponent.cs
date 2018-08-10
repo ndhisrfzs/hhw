@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿#if Server
+using System.Net;
 using System.Threading.Tasks;
 
 namespace GN
@@ -20,3 +21,4 @@ namespace GN
         }
     }
 }
+#endif

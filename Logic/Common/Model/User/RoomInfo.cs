@@ -6,16 +6,14 @@ namespace Logic
 {
     public class RoomInfo
     {
-        public int key;
-        public GameState game_state;
-        public Games game;
-        public GameType game_type;
-        public byte model_type;
-        public PlayerInfo[] players;
-        public DiscardInfo discard_info;
-        public DateTime now;
-
-        public Action<RoomInfo> requestCallback;
+        public int key { get; set; }
+        public GameState game_state { get; set; }
+        public Games game { get; set; }
+        public GameType game_type { get; set; }
+        public byte model_type { get; set; }
+        public PlayerInfo[] players { get; set; }
+        public DiscardInfo discard_info { get; set; }
+        public DateTime now { get; set; }
 
         public RoomInfo() { }
 
@@ -30,11 +28,11 @@ namespace Logic
 
         public void Broadcast()
         {
-            requestCallback?.Invoke(this);
-            foreach (var item in requestCallback.GetInvocationList())
-            {
-                requestCallback -= item as Action<RoomInfo>;
-            } 
+            //requestCallback?.Invoke(this);
+            //foreach (var item in requestCallback.GetInvocationList())
+            //{
+            //    requestCallback -= item as Action<RoomInfo>;
+            //} 
         }
 
         /// <summary>
@@ -459,21 +457,21 @@ namespace Logic
 
     public class PlayerInfo
     {
-        public long uid;
-        public string name;
-        public short sex;
-        public string head_url;
-        public bool is_ready;
-        public int score;
-        public int over_index;
-        public int round_score;
-        public bool is_ai;
+        public long uid { get; set; }
+        public string name { get; set; }
+        public short sex { get; set; }
+        public string head_url { get; set; }
+        public bool is_ready { get; set; }
+        public int score { get; set; }
+        public int over_index { get; set; }
+        public int round_score { get; set; }
+        public bool is_ai { get; set; }
         [NonSerialized]
         public List<byte> hand_cards;
-        public List<byte> show_cards;
-        public int hand_card_num;
-        public Dictionary<byte, byte> bombs;
-        public int contribute_score;
+        public List<byte> show_cards { get; set; }
+        public int hand_card_num { get; set; }
+        public Dictionary<byte, byte> bombs { get; set; }
+        public int contribute_score { get; set; }
 
         public PlayerInfo() { }       
         public PlayerInfo(long uid, string name, short sex, string head_url, bool is_ready, int score, bool is_ai = false)
@@ -534,11 +532,11 @@ namespace Logic
 
     public class DiscardInfo
     {
-        public long pre_uid;
-        public long pre_discard_uid;
-        public List<byte> pre_discard_cards;
+        public long pre_uid { get; set; }
+        public long pre_discard_uid { get; set; }
+        public List<byte> pre_discard_cards { get; set; }
 
-        public long cur_uid;
-        public DateTime wait_time;
+        public long cur_uid { get; set; }
+        public DateTime wait_time { get; set; }
     }
 }

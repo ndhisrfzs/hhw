@@ -48,10 +48,13 @@ namespace GN
 
         private void RegisterHandler(ushort opcode, IMHandler handler)
         {
-            if(!this.handlers.TryAdd(opcode, handler))
+            if(this.handlers.ContainsKey(opcode))
             {
                 Log.Error("RegisterHandler Error repeat handler opcode:" + opcode);
+                return;
             }
+
+            this.handlers.Add(opcode, handler);
         }
 
         public bool IsLocalHandler(ushort opcode)

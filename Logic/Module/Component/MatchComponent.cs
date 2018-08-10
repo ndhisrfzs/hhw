@@ -73,6 +73,7 @@ namespace Logic
                                 {
                                     m_PlayerSet.Remove(player.data.uid);
                                 }
+                                InitRoom(players);
                                 //做开始处理
                                 //RoomManager.Instance.InitRoom(players);
                             }
@@ -81,6 +82,28 @@ namespace Logic
                 }
 
                 await Game.Scene.GetComponent<TimerComponent>().WaitAsync(1000);
+            }
+        }
+
+        private async void InitRoom(Queue<MatchData<IMatcher>> MatchPlayers)
+        {
+            var slave = Game.Scene.GetComponent<SlaveComponent>();
+            var gameConfig = await slave.Get(AppType.Game);
+            var gameSession = Game.Scene.GetComponent<NetInnerComponent>().Get(gameConfig.innerAddress.IpEndPoint());
+
+            List<IMatcher> players = new List<IMatcher>();
+            foreach (var player in MatchPlayers)
+            {
+                players.Add(player.data);
+            }
+            var roomActor =(M2G_InitRoom.Response)await gameSession.Call(new M2G_InitRoom.Request() { players = players });
+            foreach (var player in players)
+            {
+                var appId = IdGenerater.GetAppIdFromId(player.uid);
+                var gateConfig = await slave.Get(appId);
+                var gateSession = Game.Scene.GetComponent<NetInnerComponent>().Get(gateConfig.innerAddress.IpEndPoint());
+
+                await gateSession.Call(new M2G_MatchSuccess.Request() { uid = player.uid, roomActorId = roomActor.actorId });
             }
         }
 

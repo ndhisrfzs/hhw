@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if Server
+using System;
 using System.Collections.Generic;
 
 namespace GN
@@ -40,3 +41,4 @@ namespace GN
         }
     }
 }
+#endif

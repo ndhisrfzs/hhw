@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if Server
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
@@ -37,6 +38,7 @@ namespace GN
             int appId = IdGenerater.GetAppIdFromId(ActorId);
             AppInfo appInfo = await Game.Scene.GetComponent<SlaveComponent>().Get(appId);
             this.Address = appInfo.innerAddress.IpEndPoint();
+            UpdateAsync();
         }
 
         public void Destroy()
@@ -156,3 +158,4 @@ namespace GN
         }
     }
 }
+#endif

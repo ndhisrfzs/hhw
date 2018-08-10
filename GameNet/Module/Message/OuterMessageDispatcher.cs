@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace GN
 {
@@ -6,6 +7,7 @@ namespace GN
     {
         public async void Dispatch(Session session, Packet packet)
         {
+#if Server
             ushort opcode = packet.Opcode;
             uint rpcId = packet.RpcId;
 
@@ -41,6 +43,9 @@ namespace GN
                     }
                 }
             }
+#else
+            await Task.CompletedTask;
+#endif
         }
     }
 }

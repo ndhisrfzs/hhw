@@ -12,9 +12,17 @@ namespace HHW.App
         static void Main(string[] args)
         {
             Game.EventSystem.Add(DLLType.Model, typeof(Game).Assembly);
-            Game.EventSystem.Add(DLLType.Logic, DllHelper.GetLogicAssembly());
+            //Game.EventSystem.Add(DLLType.Logic, DllHelper.GetLogicAssembly());
+            Game.EventSystem.Add(DLLType.Logic, typeof(GamePlayer).Assembly);
 
             var config = Game.Scene.AddComponent<ConfigComponent, string>("Config");
+
+            IdGenerater.AppId = config.AppId;
+
+            LogManager.Configuration.Variables["appType"] = config.AppType.ToString();
+            LogManager.Configuration.Variables["appId"] = config.AppId.ToString();
+            LogManager.Configuration.Variables["appTypeFormat"] = $"{config.AppType,-8}";
+            LogManager.Configuration.Variables["appIdFormat"] = $"{config.AppId:D3}";
 
             Game.Scene.AddComponent<OpcodeTypeComponent>();
             Game.Scene.AddComponent<MessageDispatherComponent, AppType>(config.AppType);
@@ -60,6 +68,13 @@ namespace HHW.App
                         Game.Scene.AddComponent<RoomManagerComponent>();
                     }
                     break;
+                case AppType.Match:
+                    {
+                        Game.Scene.AddComponent<NetInnerComponent, IPEndPoint>(new IPEndPoint(IPAddress.Any, config.InnerAddress.Port));
+                        Game.Scene.AddComponent<SlaveComponent>();
+                        Game.Scene.AddComponent<MatchComponent>();
+                    }
+                    break;
                 case AppType.AllServer:
                     {
                         Game.Scene.AddComponent<MasterComponent>();
@@ -71,6 +86,7 @@ namespace HHW.App
                         Game.Scene.AddComponent<DBComponent, string>(config.DbConnection);
                         Game.Scene.AddComponent<SlaveComponent>();
                         Game.Scene.AddComponent<RandomComponent>();
+                        Game.Scene.AddComponent<MatchComponent>();
                         Game.Scene.AddComponent<RoomKeyComponent, int>(899999);
                         Game.Scene.AddComponent<RoomManagerComponent>();
                     }
@@ -80,10 +96,6 @@ namespace HHW.App
             //var dbProxy = Game.Scene.GetComponent<DBProxyComponent>();
             //var a = dbProxy.QueryFirstOrDefault<Twill_User>("");
 
-            LogManager.Configuration.Variables["appType"] = config.AppType.ToString();
-            LogManager.Configuration.Variables["appId"] = config.AppId.ToString();
-            LogManager.Configuration.Variables["appTypeFormat"] = $"{config.AppType, -8}";
-            LogManager.Configuration.Variables["appIdFormat"] = $"{config.AppId:D3}";
             Log.Info("Start Over");
 
             while (true)

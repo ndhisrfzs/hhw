@@ -1,4 +1,5 @@
-﻿namespace GN
+﻿#if Server
+namespace GN
 {
     public class SlaveLifeComponent : Component
     {
@@ -22,3 +23,4 @@
         }
     }
 }
+#endif

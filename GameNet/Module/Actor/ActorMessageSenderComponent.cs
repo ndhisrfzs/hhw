@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if Server
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -31,7 +32,8 @@ namespace GN
                 return actorMessageSender;
             }
 
-            actorMessageSender = ObjectFactory.CreateWithParent<ActorMessageSender, long>(this, actorId);
+            actorMessageSender = ObjectFactory.CreateWithId<ActorMessageSender>(actorId);
+            actorMessageSender.Parent = this;
             this.ActorMessageSenders[actorId] = actorMessageSender;
             return actorMessageSender;
         }
@@ -49,3 +51,4 @@ namespace GN
         }
     }
 }
+#endif

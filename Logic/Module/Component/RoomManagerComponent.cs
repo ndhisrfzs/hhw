@@ -34,32 +34,32 @@ namespace Logic
             }
         }
 
-        public Task<RoomInfo> WaitForRoomInfoUpdate(long uid)
-        {
-            int roomKey;
-            if (m_playings.TryGetValue(uid, out roomKey))
-            {
-                RoomInfo roomInfo;
-                if (m_Hall.TryGetValue(roomKey, out roomInfo))
-                {
-                    var tcs = new TaskCompletionSource<RoomInfo>();
-                    roomInfo.requestCallback += (response) =>
-                    {
-                        try
-                        {
-                            tcs.SetResult(response);
-                        }
-                        catch (Exception e)
-                        {
-                            tcs.SetException(e);
-                        }
-                    };
+        //public Task<RoomInfo> WaitForRoomInfoUpdate(long uid)
+        //{
+        //    int roomKey;
+        //    if (m_playings.TryGetValue(uid, out roomKey))
+        //    {
+        //        RoomInfo roomInfo;
+        //        if (m_Hall.TryGetValue(roomKey, out roomInfo))
+        //        {
+        //            var tcs = new TaskCompletionSource<RoomInfo>();
+        //            roomInfo.requestCallback += (response) =>
+        //            {
+        //                try
+        //                {
+        //                    tcs.SetResult(response);
+        //                }
+        //                catch (Exception e)
+        //                {
+        //                    tcs.SetException(e);
+        //                }
+        //            };
 
-                    return tcs.Task;
-                }
-            }
-            return null;
-        }
+        //            return tcs.Task;
+        //        }
+        //    }
+        //    return null;
+        //}
 
         private void AIDiscard(RoomInfo room_info)
         {
@@ -90,18 +90,18 @@ namespace Logic
         /// 初始化房间，匹配模式接口
         /// </summary>
         /// <param name="players"></param>
-        public void InitRoom<T>(Queue<MatchData<T>> players)
+        public int InitRoom<T>(List<T> players)
             where T : class, IMatcher
         {
-            var first_player = players.Peek();
-            RoomInfo room_info = new RoomInfo(Game.Scene.GetComponent<RoomKeyComponent>().Key, first_player.data.game, first_player.data.game_type, first_player.data.model_type);
+            var first_player = players[0];
+            RoomInfo room_info = new RoomInfo(Game.Scene.GetComponent<RoomKeyComponent>().Key, first_player.game, first_player.game_type, first_player.model_type);
 
             for (int i = 0; i < 4; i++)
             {
-                var data = players.Count > 0 ? players.Dequeue() : null;
+                var data = players.Count > i ? players[i] : null;
                 if (data != null)
                 {
-                    var player_info = data.data as Matcher;
+                    var player_info = data as Matcher;
                     room_info.players[i] = new PlayerInfo(player_info.uid, player_info.name, player_info.sex, player_info.head_url, true, 0);
                 }
                 else
@@ -114,6 +114,8 @@ namespace Logic
             {
                 DealCards(room_info);
             }
+
+            return room_info.key;
         }
 
         /// <summary>
@@ -149,7 +151,7 @@ namespace Logic
 
         public bool EnterRoom(long uid, string name, short sex, string head_url, int key)
         {
-            var room_info = GetRoomInfo(key);
+            var room_info = GetRoomInfoByKey(key);
             if (room_info == null)
                 return false;
 
@@ -505,13 +507,13 @@ namespace Logic
             int key;
             if (m_playings.TryGetValue(uid, out key))
             {
-                return GetRoomInfo(key);
+                return GetRoomInfoByKey(key);
             }
 
             return null;
         }
 
-        private RoomInfo GetRoomInfo(int key)
+        public RoomInfo GetRoomInfoByKey(int key)
         {
             RoomInfo room_info;
             if (m_Hall.TryGetValue(key, out room_info))

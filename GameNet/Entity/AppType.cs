@@ -9,8 +9,11 @@
         DB = 1 << 3,
         Location = 1 << 4,
         Game = 1 << 5,
+        Match = 1 << 6,
 
-        AllServer = Master | Login | Gate | DB | Location | Game
+        Client = 1 << 20,
+
+        AllServer = Master | Login | Gate | DB | Location | Game | Match
     }
 
     public static class AppTypeHelper
